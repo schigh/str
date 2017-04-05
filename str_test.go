@@ -17,17 +17,17 @@ func strpadtests() []string {
 	}
 }
 
-func ExampleStrPad() {
-	fmt.Println(StrPad("123", "0", 6, StrPadLeft))
+func ExamplePad() {
+	fmt.Println(Pad("123", "0", 6, PadLeft))
 	// Output: 000123
 }
 
-func ExampleSubStr() {
-	fmt.Println(SubStr("This is a sentence", 5, 2))
+func ExampleSubstring() {
+	fmt.Println(Substring("This is a sentence", 5, 2))
 	// Output: is
 }
 
-func TestStrPadLeftSingle(t *testing.T) {
+func TestPadLeftSingle(t *testing.T) {
 	tests := strpadtests()
 	correct := []string{
 		"000000",
@@ -37,12 +37,12 @@ func TestStrPadLeftSingle(t *testing.T) {
 		"000aaa",
 	}
 	for idx, test := range tests {
-		pad := StrPad(test, "0", 6, StrPadLeft)
+		pad := Pad(test, "0", 6, PadLeft)
 		assert.Equal(t, pad, correct[idx])
 	}
 }
 
-func TestStrPadLeftMulti(t *testing.T) {
+func TestPadLeftMulti(t *testing.T) {
 	tests := strpadtests()
 	correct := []string{
 		"xoxoxoxoxoxo0",
@@ -52,12 +52,12 @@ func TestStrPadLeftMulti(t *testing.T) {
 		"xoxoxoxoxoaaa",
 	}
 	for idx, test := range tests {
-		pad := StrPad(test, "xo", 12, StrPadLeft)
+		pad := Pad(test, "xo", 12, PadLeft)
 		assert.Equal(t, pad, correct[idx])
 	}
 }
 
-func TestStrPadRightSingle(t *testing.T) {
+func TestPadRightSingle(t *testing.T) {
 	tests := strpadtests()
 	correct := []string{
 		"000000",
@@ -67,12 +67,12 @@ func TestStrPadRightSingle(t *testing.T) {
 		"aaa000",
 	}
 	for idx, test := range tests {
-		pad := StrPad(test, "0", 6, StrPadRight)
+		pad := Pad(test, "0", 6, PadRight)
 		assert.Equal(t, pad, correct[idx])
 	}
 }
 
-func TestStrPadRightMulti(t *testing.T) {
+func TestPadRightMulti(t *testing.T) {
 	tests := strpadtests()
 	correct := []string{
 		"0xoxoxoxoxoxo",
@@ -82,47 +82,47 @@ func TestStrPadRightMulti(t *testing.T) {
 		"aaaxoxoxoxoxo",
 	}
 	for idx, test := range tests {
-		pad := StrPad(test, "xo", 12, StrPadRight)
+		pad := Pad(test, "xo", 12, PadRight)
 		assert.Equal(t, pad, correct[idx])
 	}
 }
 
-func TestSubStr(t *testing.T) {
+func TestSubstring(t *testing.T) {
 	testString := "This is a test string that you should use for tests"
 
 	// forward in bounds
-	str1 := SubStr(testString, 0, 4)
-	assert.Equal(t, "This", str1)
+	s1 := Substring(testString, 0, 4)
+	assert.Equal(t, "This", s1)
 
 	// backward in bounds
-	str2 := SubStr(testString, -5, 4)
-	assert.Equal(t, "test", str2)
+	s2 := Substring(testString, -5, 4)
+	assert.Equal(t, "test", s2)
 
 	// forward in bounds
-	str3 := SubStr(testString, 10, 11)
-	assert.Equal(t, "test string", str3)
+	s3 := Substring(testString, 10, 11)
+	assert.Equal(t, "test string", s3)
 
 	// backward in bounds
-	str4 := SubStr(testString, -13, 3)
-	assert.Equal(t, "use", str4)
+	s4 := Substring(testString, -13, 3)
+	assert.Equal(t, "use", s4)
 
 	// forward with too large length
-	str5 := SubStr(testString, 38, 100)
-	assert.Equal(t, "use for tests", str5)
+	s5 := Substring(testString, 38, 100)
+	assert.Equal(t, "use for tests", s5)
 
 	// backward with too large length
-	str6 := SubStr(testString, -13, 100)
-	assert.Equal(t, "use for tests", str6)
+	s6 := Substring(testString, -13, 100)
+	assert.Equal(t, "use for tests", s6)
 
 	// forward with invalid start
-	str7 := SubStr(testString, 60, 1)
-	assert.Equal(t, "", str7)
+	s7 := Substring(testString, 60, 1)
+	assert.Equal(t, "", s7)
 
 	// backward with invalid start
-	str8 := SubStr(testString, -60, 1)
-	assert.Equal(t, "", str8)
+	s8 := Substring(testString, -60, 1)
+	assert.Equal(t, "", s8)
 
 	// zero length
-	str9 := SubStr(testString, 0, 0)
-	assert.Equal(t, "", str9)
+	s9 := Substring(testString, 0, 0)
+	assert.Equal(t, "", s9)
 }
