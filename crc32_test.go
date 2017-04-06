@@ -19,7 +19,7 @@ func TestCRC32(t *testing.T) {
 	assert.Equal(t, CRC32ResultDefault, CRC32(TestCRC32TestString))
 }
 
-func TestCRC322_C(t *testing.T) {
+func TestCRC32_C(t *testing.T) {
 	options := &CRC32Options{
 		PolynomialType: CRC32TypeC,
 	}
@@ -27,7 +27,7 @@ func TestCRC322_C(t *testing.T) {
 	assert.Equal(t, CRC32ResultC, CRC32(TestCRC32TestString))
 }
 
-func TestCRC322_K(t *testing.T) {
+func TestCRC32_K(t *testing.T) {
 	options := &CRC32Options{
 		PolynomialType: CRC32TypeK,
 	}
@@ -35,7 +35,7 @@ func TestCRC322_K(t *testing.T) {
 	assert.Equal(t, CRC32ResultK, CRC32(TestCRC32TestString))
 }
 
-func TestCRC322_K2(t *testing.T) {
+func TestCRC32_K2(t *testing.T) {
 	options := &CRC32Options{
 		PolynomialType: CRC32TypeK2,
 	}
@@ -43,7 +43,7 @@ func TestCRC322_K2(t *testing.T) {
 	assert.Equal(t, CRC32ResultK2, CRC32(TestCRC32TestString))
 }
 
-func TestCRC322_Q(t *testing.T) {
+func TestCRC32_Q(t *testing.T) {
 	options := &CRC32Options{
 		PolynomialType: CRC32TypeQ,
 	}
