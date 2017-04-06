@@ -1,13 +1,37 @@
 package str
 
 import (
+	"crypto/hmac"
+	"crypto/md5"
+	"crypto/sha1"
+	"crypto/sha256"
+	"crypto/sha512"
+	"encoding/hex"
+	"hash"
 	"net"
 	"regexp"
 )
 
+// HMACDigestType - The hash type for the HMAC function
+type HMACDigestType int
+
+const (
+	// Uses MD5 hash
+	HMACDigestTypeMD5 HMACDigestType = iota
+	// Uses SHA1 hash
+	HMACDigestTypeSHA1
+	// Uses SHA256 hash
+	HMACDigestTypeSHA256
+	// Uses SHA384 hash
+	HMACDigestTypeSHA384
+	// Uses SHA512 hash
+	HMACDigestTypeSHA512
+)
+
 // HMACOptions - A wrapper for HMAC key data
 type HMACOptions struct {
-	KeyData []byte
+	KeyData    []byte
+	DigestType HMACDigestType
 }
 
 var defaultHMACOptions *HMACOptions
@@ -32,7 +56,8 @@ func init() {
 	}
 
 	defaultHMACOptions = &HMACOptions{
-		KeyData: []byte(machineName),
+		KeyData:    []byte(machineName),
+		DigestType: HMACDigestTypeSHA256,
 	}
 }
 
@@ -51,5 +76,45 @@ func HMAC(in string) string {
 // HMACWithOptions - get the HMAC hash of a string
 // using user-supplied options
 func HMACWithOptions(in string, options *HMACOptions) string {
-	return ""
+	// digest function
+	var hasher func() hash.Hash
+	switch options.DigestType {
+	case HMACDigestTypeMD5:
+		hasher = md5.New
+	case HMACDigestTypeSHA1:
+		hasher = sha1.New
+	case HMACDigestTypeSHA256:
+		hasher = sha256.New
+	case HMACDigestTypeSHA384:
+		hasher = sha512.New384
+	case HMACDigestTypeSHA512:
+		hasher = sha512.New
+	default:
+		return ""
+	}
+
+	mac := hmac.New(hasher, options.KeyData)
+	mac.Write([]byte(in))
+	sum := mac.Sum(nil)
+	bytesOut := make([]byte, getHexBufferSize(options.DigestType))
+	hex.Encode(bytesOut, sum)
+
+	return string(bytesOut)
+}
+
+func getHexBufferSize(kind HMACDigestType) int {
+	switch kind {
+	case HMACDigestTypeMD5:
+		return md5.Size * 2
+	case HMACDigestTypeSHA1:
+		return sha1.Size * 2
+	case HMACDigestTypeSHA256:
+		return sha256.Size * 2
+	case HMACDigestTypeSHA384:
+		return sha512.Size384 * 2
+	case HMACDigestTypeSHA512:
+		return sha512.Size * 2
+	}
+
+	return 0
 }
