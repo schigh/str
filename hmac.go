@@ -16,15 +16,10 @@ import (
 type HMACDigestType int
 
 const (
-	// Uses MD5 hash
-	HMACDigestTypeMD5 HMACDigestType = iota
-	// Uses SHA1 hash
+	HMACDigestTypeSHA256 HMACDigestType = iota
+	HMACDigestTypeMD5
 	HMACDigestTypeSHA1
-	// Uses SHA256 hash
-	HMACDigestTypeSHA256
-	// Uses SHA384 hash
 	HMACDigestTypeSHA384
-	// Uses SHA512 hash
 	HMACDigestTypeSHA512
 )
 

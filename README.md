@@ -17,7 +17,7 @@ This is a work in progress.  Here are the proposed bits thusfar:
 * CRC64 - get CRC64 checksum of a string
 * Wrap - get a non-breaking word-wrapped string of a long string
 * Currency - get a currency-formatted string
-* HMAC - get an HMAC hash of a string
+* HMAC - get an HMAC hash of a string (done)
 * Token - generate a token based on preferences
 
 Some of these utilities will require pre-configuration via options, 
