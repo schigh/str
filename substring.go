@@ -8,10 +8,10 @@ package str
 // If [start] is out of range from either front or back, then an empty
 // string is returned
 func Substring(in string, start int, length uint) string {
-	size := len(in)
 	if length == 0 {
 		return ""
 	}
+	size := len(in)
 	if start < 0 {
 		frontIndex := size + start
 		if frontIndex < 0 {
