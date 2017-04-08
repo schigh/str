@@ -15,7 +15,7 @@ This is a work in progress.  Here are the proposed bits thusfar:
 * SHA256 - get SHA256 string hash of a string (done)
 * CRC32 - Get CRC32 checksum of a string (done)
 * CRC64 - get CRC64 checksum of a string (done)
-* Wrap - get a non-breaking word-wrapped string of a long string
+* Wrap - get a non-breaking word-wrapped string of a long string (done)
 * Currency - get a currency-formatted string
 * HMAC - get an HMAC hash of a string (done)
 * Token - generate a token based on preferences
