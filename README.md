@@ -5,15 +5,65 @@
 # str
 The missing Golang Strings Library
 
-##### Yo
+#### Overview
 
-This is a work in progress.  Here are the proposed bits thusfar:
+Many of these functions serve as Go analogues to some of the better PHP string 
+functions (yes, they do exist).
 
-* Pad - left or right pad a string with another string (done)
-* Substring - get a substring based on start index and length (done)
-* MD5 - get MD5 string hash of a string (done)
-* SHA1 - get SHA1 string hash of a string (done)
-* SHA256 - get SHA256 string hash of a string (done)
+Some things of note:
+* All functions output a single string.
+    * If an error is encountered, or if a function cannot do its job, it outputs an empty string.
+* There are no dependencies other than elements from the standard library
+
+
+#### Usage
+
+```go
+import "github.com/schigh/str"
+```
+##### Pad
+Pads a string left or right, similar to PHP's `str_pad`
+```go
+sku := str.Pad("1234", "0", 8, str.PadLeft)
+// 00001234
+```
+Your pad string may be longer than one character
+```go
+id := str.Pad("1234", "ABC", 12, str.PadRight)
+// 1234ABCABCABC
+```
+Note that for multi-character pads, if the padding doesn't land cleanly at the desired length, `str.Pad` will overshoot the desired length until the padding is complete.
+
+
+##### Substring
+Gets a substring from a string.
+```go
+month := str.Substring("2017-04-24", 5, 2)
+// 04
+
+day := str.Substring("2017-04-24", -2, 2)
+// 24
+```
+You can use a negative value for the start, which, like PHP's [`substr`](http://us3.php.net/manual/en/function.substr.php) function, will pull from the back of the source string.
+
+##### Common Hash Functions
+The following hash functions return the hex-encoded hash of an input string
+```go
+data := "This is a string"
+
+md5 := str.MD5(data)
+// 1710528bf976601a5d203cbc289e1a76
+
+sha1 := str.SHA1(data)
+// bd82fb0e81ee9f15f5929e0564093bc9f8015f1d
+
+sha256 := str.SHA256(data)
+// fe29bfd7e19d2a352cd9bfaa21176d521b874969dd57e8c72c8668fc8fd8f4fc
+```
+
+##### HMAC
+
+
 * CRC32 - Get CRC32 checksum of a string (done)
 * CRC64 - get CRC64 checksum of a string (done)
 * Wrap - get a non-breaking word-wrapped string of a long string (done)
