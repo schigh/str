@@ -35,7 +35,7 @@ func init() {
 	// This just takes the hardware address of the first network interface
 	// matching the pattern (ex: 00:af:19:3c:2e:80)
 	// and uses the SHA256 hash of that as the default key.  It is NOT
-	// a secure implementation, as it is recommended that the user
+	// a secure implementation, and it is recommended that the user
 	// seed the str implementation with their own key data
 	re := regexp.MustCompile(`(([a-f0-9]{2}:){5}[a-f0-9]{2}$)`)
 	machineName := ""
