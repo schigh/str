@@ -42,7 +42,7 @@ func TokenWithOptions(options *TokenOptions) string {
 		return options.Prefix
 	}
 	rounds := int(options.Length) - pl
-	token := ""
+	var token string
 	for i := 0; i < rounds; i++ {
 		guard := rand.Intn(cl)
 		token += options.Charset[guard : guard+1]
