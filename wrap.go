@@ -54,8 +54,7 @@ func WrapWithOptions(in string, options *WrapOptions) string {
 
 func wrapLiteral(in string, width uint, lineBreak string) string {
 	lines := uint(math.Ceil(float64(len(in)) / float64(width)))
-	out := ""
-
+	var out string
 	var i uint
 	for i = 0; i < lines; i++ {
 		start := i * width
@@ -71,8 +70,7 @@ func wrapLiteral(in string, width uint, lineBreak string) string {
 }
 
 func wrapBeforeWord(words []string, width uint, lineBreak string) string {
-	out := ""
-	line := ""
+	var out, line string
 	for _, word := range words {
 		_line := line + word
 		if len(_line) > int(width) {
@@ -87,8 +85,7 @@ func wrapBeforeWord(words []string, width uint, lineBreak string) string {
 }
 
 func wrapAfterWord(words []string, width uint, lineBreak string) string {
-	out := ""
-	line := ""
+	var out, line string
 	for _, word := range words {
 		if len(line)+1 > int(width) {
 			out += strings.TrimSpace(line) + lineBreak
