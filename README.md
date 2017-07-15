@@ -8,9 +8,46 @@ The missing Golang Strings Library
 
 str makes some common string tasks a little simpler, so you can get on with writing your applications.
 
-----
+#### Overview
 
-### Features
+Many of these functions serve as Go analogues to some of the better PHP string 
+functions (yes, they do exist).
+
+Some things of note:
+* All functions output a single string.
+    * If an error is encountered, or if a function cannot do its job, it outputs an empty string.
+* There are no dependencies other than elements from the standard library
+
+
+#### Usage
+
+```go
+import "github.com/schigh/str"
+```
+##### Pad
+Pads a string left or right, similar to PHP's `str_pad`
+```go
+sku := str.Pad("1234", "0", 8, str.PadLeft)
+// 00001234
+```
+Your pad string may be longer than one character
+```go
+id := str.Pad("1234", "ABC", 12, str.PadRight)
+// 1234ABCABCABC
+```
+Note that for multi-character pads, if the padding doesn't land cleanly at the desired length, `str.Pad` will overshoot the desired length until the padding is complete.
+
+
+##### Substring
+Gets a substring from a string.
+```go
+month := str.Substring("2017-04-24", 5, 2)
+// 04
+
+day := str.Substring("2017-04-24", -2, 2)
+// 24
+```
+You can use a negative value for the start, which, like PHP's [`substr`](http://us3.php.net/manual/en/function.substr.php) function, will pull from the back of the source string.
 
 ###### Pad
 Pads a string with another string.  This behavior is similar to PHP's [`str_pad`](http://php.net/manual/en/function.str-pad.php)
