@@ -55,14 +55,15 @@ func SlugifyASCII(s string) string {
 		if r > 127 {
 			continue
 		}
-		switch {
-		case r >= 'a' && r <= 'z', r >= '0' && r <= '9':
+		action := classifySlugRune(r)
+		switch action {
+		case slugKeep:
 			b.WriteRune(r)
 			prevHyphen = false
-		case r >= 'A' && r <= 'Z':
-			b.WriteRune(r + 32) // lowercase
+		case slugLower:
+			b.WriteRune(r + 32)
 			prevHyphen = false
-		case r == ' ' || r == '-' || r == '_' || unicode.IsPunct(r) || unicode.IsSymbol(r):
+		case slugHyphen:
 			if !prevHyphen && b.Len() > 0 {
 				b.WriteByte('-')
 				prevHyphen = true
@@ -74,4 +75,26 @@ func SlugifyASCII(s string) string {
 		result = result[:len(result)-1]
 	}
 	return result
+}
+
+type slugAction int
+
+const (
+	slugSkip   slugAction = iota
+	slugKeep              // lowercase letter or digit
+	slugLower             // uppercase letter to lowercase
+	slugHyphen            // replace with hyphen
+)
+
+func classifySlugRune(r rune) slugAction {
+	switch {
+	case r >= 'a' && r <= 'z', r >= '0' && r <= '9':
+		return slugKeep
+	case r >= 'A' && r <= 'Z':
+		return slugLower
+	case r == ' ' || r == '-' || r == '_' || unicode.IsPunct(r) || unicode.IsSymbol(r):
+		return slugHyphen
+	default:
+		return slugSkip
+	}
 }

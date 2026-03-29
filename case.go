@@ -69,10 +69,10 @@ var titleCaseSkipWords = map[string]bool{
 //     - lowercase-to-uppercase starts a new word
 //     - digit-to-letter or letter-to-digit starts a new word
 //     - an uppercase run is checked against known acronyms (longest prefix first);
-//       a matching prefix becomes one word, then scanning continues on the remainder
+//     a matching prefix becomes one word, then scanning continues on the remainder
 //     - a non-acronym uppercase run followed by a lowercase letter splits so the
-//       last uppercase letter begins the next word (e.g. "XML" in "XMLParser" stays
-//       together, but unknown runs like "ABCdef" split as "AB" + "Cdef")
+//     last uppercase letter begins the next word (e.g. "XML" in "XMLParser" stays
+//     together, but unknown runs like "ABCdef" split as "AB" + "Cdef")
 //  3. Non-letter, non-digit runes (punctuation) are stripped.
 //  4. Every word is lowercased before returning.
 func splitWords(s string) []string {
@@ -101,115 +101,124 @@ func splitOnDelimiters(s string) []string {
 	})
 }
 
+type segmentSplitter struct {
+	runes    []rune
+	acronyms []string
+	words    []string
+	current  []rune
+	pos      int
+}
+
 func splitSegment(seg string, acronyms []string) []string {
-	runes := []rune(seg)
-	var words []string
-	var current []rune
-
-	flush := func() {
-		if len(current) > 0 {
-			words = append(words, strings.ToLower(string(current)))
-			current = nil
-		}
+	s := &segmentSplitter{
+		runes:    []rune(seg),
+		acronyms: acronyms,
 	}
+	s.split()
+	return s.words
+}
 
-	i := 0
-	for i < len(runes) {
-		r := runes[i]
+func (s *segmentSplitter) flush() {
+	if len(s.current) > 0 {
+		s.words = append(s.words, strings.ToLower(string(s.current)))
+		s.current = nil
+	}
+}
+
+func (s *segmentSplitter) split() {
+	for s.pos < len(s.runes) {
+		r := s.runes[s.pos]
 
 		if !unicode.IsLetter(r) && !unicode.IsDigit(r) {
-			// Strip punctuation.
-			i++
+			s.pos++
 			continue
 		}
 
 		if unicode.IsDigit(r) {
-			// If current word is letters, start a new word for digits.
-			if len(current) > 0 && unicode.IsLetter(current[len(current)-1]) {
-				flush()
+			if len(s.current) > 0 && unicode.IsLetter(s.current[len(s.current)-1]) {
+				s.flush()
 			}
-			current = append(current, r)
-			i++
+			s.current = append(s.current, r)
+			s.pos++
 			continue
 		}
 
-		// r is a letter.
-		if len(current) > 0 && unicode.IsDigit(current[len(current)-1]) && unicode.IsUpper(r) {
-			// Transition from digit to uppercase letter.
-			flush()
+		if len(s.current) > 0 && unicode.IsDigit(s.current[len(s.current)-1]) && unicode.IsUpper(r) {
+			s.flush()
 		}
 
 		if unicode.IsLower(r) {
-			current = append(current, r)
-			i++
+			s.current = append(s.current, r)
+			s.pos++
 			continue
 		}
 
-		// r is uppercase. Collect the full uppercase run.
-		upperStart := i
-		for i < len(runes) && unicode.IsUpper(runes[i]) {
-			i++
-		}
-		upperRun := runes[upperStart:i]
-
-		// If current word has lowercase content, flush before processing the uppercase run.
-		if len(current) > 0 {
-			flush()
-		}
-
-		// Try to consume the uppercase run using acronym matching.
-		j := 0
-		for j < len(upperRun) {
-			remaining := string(upperRun[j:])
-			matched := false
-
-			for _, acr := range acronyms {
-				if strings.HasPrefix(remaining, acr) {
-					flush()
-					words = append(words, strings.ToLower(acr))
-					j += len([]rune(acr))
-					matched = true
-					break
-				}
-			}
-			if matched {
-				continue
-			}
-
-			// No acronym match. If this uppercase letter is followed by more uppercase
-			// letters or is at the end, it could be part of a non-acronym run.
-			// If the next char after the uppercase run is lowercase, the last uppercase
-			// letter starts a new camelCase word.
-			if j == len(upperRun)-1 && i < len(runes) && unicode.IsLower(runes[i]) {
-				// Last uppercase letter begins a new word with the following lowercase.
-				flush()
-				current = append(current, upperRun[j])
-				j++
-			} else if j < len(upperRun)-1 {
-				// Middle of a non-acronym uppercase run. Check if the tail transitions
-				// into lowercase (meaning the last uppercase letter starts a new word).
-				endOfRun := len(upperRun)
-				if i < len(runes) && unicode.IsLower(runes[i]) {
-					// The last uppercase letter of the run belongs with the lowercase.
-					endOfRun = len(upperRun) - 1
-				}
-				// Emit remaining uppercase letters up to endOfRun as a single word.
-				if endOfRun > j {
-					flush()
-					current = append(current, upperRun[j:endOfRun]...)
-					j = endOfRun
-				}
-			} else {
-				current = append(current, upperRun[j])
-				j++
-			}
-		}
+		s.processUpperRun()
 	}
 
-	if len(current) > 0 {
-		words = append(words, strings.ToLower(string(current)))
+	if len(s.current) > 0 {
+		s.words = append(s.words, strings.ToLower(string(s.current)))
 	}
-	return words
+}
+
+func (s *segmentSplitter) processUpperRun() {
+	start := s.pos
+	for s.pos < len(s.runes) && unicode.IsUpper(s.runes[s.pos]) {
+		s.pos++
+	}
+	upperRun := s.runes[start:s.pos]
+
+	if len(s.current) > 0 {
+		s.flush()
+	}
+
+	followedByLower := s.pos < len(s.runes) && unicode.IsLower(s.runes[s.pos])
+
+	j := 0
+	for j < len(upperRun) {
+		if n := s.matchAcronym(upperRun[j:]); n > 0 {
+			s.flush()
+			s.words = append(s.words, strings.ToLower(string(upperRun[j:j+n])))
+			j += n
+			continue
+		}
+
+		s.handleNonAcronymUpper(upperRun, j, followedByLower)
+		break
+	}
+}
+
+func (s *segmentSplitter) matchAcronym(run []rune) int {
+	remaining := string(run)
+	for _, acr := range s.acronyms {
+		if strings.HasPrefix(remaining, acr) {
+			return len([]rune(acr))
+		}
+	}
+	return 0
+}
+
+func (s *segmentSplitter) handleNonAcronymUpper(upperRun []rune, j int, followedByLower bool) {
+	if j == len(upperRun)-1 && followedByLower {
+		s.flush()
+		s.current = append(s.current, upperRun[j])
+		return
+	}
+
+	endOfRun := len(upperRun)
+	if followedByLower {
+		endOfRun = len(upperRun) - 1
+	}
+
+	if endOfRun > j {
+		s.flush()
+		s.current = append(s.current, upperRun[j:endOfRun]...)
+	}
+
+	if endOfRun < len(upperRun) {
+		s.flush()
+		s.current = append(s.current, upperRun[endOfRun:]...)
+	}
 }
 
 func capitalize(word string) string {
