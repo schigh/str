@@ -36,6 +36,90 @@ func TestPipe(t *testing.T) {
 	})
 }
 
+func TestPipeIf(t *testing.T) {
+	isLong := func(s string) bool { return len(s) > 5 }
+
+	t.Run("predicate true applies fn", func(t *testing.T) {
+		fn := PipeIf(isLong, strings.ToUpper)
+		if got := fn("hello world"); got != "HELLO WORLD" {
+			t.Errorf("got %q, want %q", got, "HELLO WORLD")
+		}
+	})
+
+	t.Run("predicate false passes through", func(t *testing.T) {
+		fn := PipeIf(isLong, strings.ToUpper)
+		if got := fn("hi"); got != "hi" {
+			t.Errorf("got %q, want %q", got, "hi")
+		}
+	})
+
+	t.Run("nil predicate is no-op", func(t *testing.T) {
+		fn := PipeIf(nil, strings.ToUpper)
+		if got := fn("hello"); got != "hello" {
+			t.Errorf("got %q, want %q", got, "hello")
+		}
+	})
+
+	t.Run("nil fn is no-op", func(t *testing.T) {
+		fn := PipeIf(isLong, nil)
+		if got := fn("hello world"); got != "hello world" {
+			t.Errorf("got %q, want %q", got, "hello world")
+		}
+	})
+
+	t.Run("composes in Pipe", func(t *testing.T) {
+		fn := Pipe(
+			TrimSpace,
+			PipeIf(isLong, strings.ToUpper),
+		)
+		if got := fn("  hello world  "); got != "HELLO WORLD" {
+			t.Errorf("got %q, want %q", got, "HELLO WORLD")
+		}
+		if got := fn("  hi  "); got != "hi" {
+			t.Errorf("got %q, want %q", got, "hi")
+		}
+	})
+
+	t.Run("empty string", func(t *testing.T) {
+		fn := PipeIf(isLong, strings.ToUpper)
+		if got := fn(""); got != "" {
+			t.Errorf("got %q, want empty", got)
+		}
+	})
+}
+
+func TestPipeUnless(t *testing.T) {
+	isShort := func(s string) bool { return len(s) <= 5 }
+
+	t.Run("predicate false applies fn", func(t *testing.T) {
+		fn := PipeUnless(isShort, strings.ToUpper)
+		if got := fn("hello world"); got != "HELLO WORLD" {
+			t.Errorf("got %q, want %q", got, "HELLO WORLD")
+		}
+	})
+
+	t.Run("predicate true passes through", func(t *testing.T) {
+		fn := PipeUnless(isShort, strings.ToUpper)
+		if got := fn("hi"); got != "hi" {
+			t.Errorf("got %q, want %q", got, "hi")
+		}
+	})
+
+	t.Run("nil predicate always applies fn", func(t *testing.T) {
+		fn := PipeUnless(nil, strings.ToUpper)
+		if got := fn("hello"); got != "HELLO" {
+			t.Errorf("got %q, want %q", got, "HELLO")
+		}
+	})
+
+	t.Run("nil fn is no-op", func(t *testing.T) {
+		fn := PipeUnless(isShort, nil)
+		if got := fn("hello world"); got != "hello world" {
+			t.Errorf("got %q, want %q", got, "hello world")
+		}
+	})
+}
+
 func TestPipeErr(t *testing.T) {
 	good := func(s string) (string, error) { return strings.ToUpper(s), nil }
 	bad := func(s string) (string, error) { return "", errors.New("fail") }

@@ -142,6 +142,43 @@ func ExampleSlugifyASCII_pipe() {
 	// Output: hello-world
 }
 
+func ExamplePipeIf() {
+	isLong := func(s string) bool { return len([]rune(s)) > 10 }
+	shorten := str.Pipe(
+		str.TrimSpace,
+		str.PipeIf(isLong, str.Truncate(10, "...")),
+	)
+	fmt.Println(shorten("  hello  "))
+	fmt.Println(shorten("  this is a long string  "))
+	// Output:
+	// hello
+	// this is...
+}
+
+func ExamplePipeUnless() {
+	isEmpty := func(s string) bool { return s == "" }
+	fn := str.PipeUnless(isEmpty, str.SlugifyASCII)
+	fmt.Println(fn("Hello World"))
+	fmt.Println(fn(""))
+	// Output:
+	// hello-world
+	//
+}
+
+func ExamplePipeMap() {
+	trimLines := str.PipeMap(str.Lines, "\n", str.TrimSpace)
+	fmt.Println(trimLines("  hello  \n  world  "))
+	// Output:
+	// hello
+	// world
+}
+
+func ExamplePipeMap_words() {
+	shoutWords := str.PipeMap(str.Words, " ", str.ToScreamingSnake)
+	fmt.Println(shoutWords("hello world"))
+	// Output: HELLO WORLD
+}
+
 func ExampleLevenshtein() {
 	fmt.Println(str.Levenshtein("kitten", "sitting"))
 	// Output: 3

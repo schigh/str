@@ -12,6 +12,36 @@ func Pipe(fns ...func(string) string) func(string) string {
 	}
 }
 
+// PipeIf returns a transformer that applies fn only when the predicate returns true.
+// If the predicate returns false, the input passes through unchanged.
+// Nil predicate is treated as always-false (no-op). Nil fn is a no-op.
+func PipeIf(predicate func(string) bool, fn func(string) string) func(string) string {
+	return func(s string) string {
+		if predicate == nil || fn == nil {
+			return s
+		}
+		if predicate(s) {
+			return fn(s)
+		}
+		return s
+	}
+}
+
+// PipeUnless returns a transformer that applies fn only when the predicate returns false.
+// If the predicate returns true, the input passes through unchanged.
+// Nil predicate is treated as always-false, so fn always applies. Nil fn is a no-op.
+func PipeUnless(predicate func(string) bool, fn func(string) string) func(string) string {
+	return func(s string) string {
+		if fn == nil {
+			return s
+		}
+		if predicate == nil || !predicate(s) {
+			return fn(s)
+		}
+		return s
+	}
+}
+
 // PipeErr composes multiple fallible string transformers into a single function.
 // Functions are applied left to right. Short-circuits on the first non-nil error;
 // the error is returned unwrapped from the failing function. With zero functions,

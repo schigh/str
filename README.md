@@ -35,6 +35,27 @@ format("  42  ") // "00000042"
 
 **PipeErr** composes fallible transformers. Short-circuits on the first error.
 
+**PipeIf** applies a transformation only when a predicate is true. Otherwise passes through.
+
+```go
+isLong := func(s string) bool { return len([]rune(s)) > 100 }
+clean := str.Pipe(
+    str.TrimSpace,
+    str.PipeIf(isLong, str.Truncate(100, "...")),
+)
+```
+
+**PipeUnless** is the inverse: applies when the predicate is false.
+
+**PipeMap** splits a string, transforms each part, and rejoins.
+
+```go
+trimLines := str.PipeMap(str.Lines, "\n", str.TrimSpace)
+trimLines("  hello  \n  world  ") // "hello\nworld"
+```
+
+Built-in splitters: `Lines` (split on `\n`) and `Words` (split on whitespace).
+
 ## Transform
 
 **ToSnakeCase** / **ToCamelCase** / **ToPascalCase** / **ToKebabCase** / **ToTitleCase** / **ToScreamingSnake**
