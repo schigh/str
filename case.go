@@ -6,13 +6,60 @@ import (
 	"unicode/utf8"
 )
 
+// CaseOption configures case conversion behavior.
+type CaseOption func(*caseConfig)
+
+type caseConfig struct {
+	acronyms []string
+}
+
+// WithAcronyms replaces the default acronym list entirely. Users who want
+// defaults plus custom acronyms must include both.
+func WithAcronyms(words ...string) CaseOption {
+	sorted := sortAcronymsByLength(words)
+	return func(c *caseConfig) { c.acronyms = sorted }
+}
+
 // sorted by length descending for longest-prefix matching
-var acronymsByLength = []string{
+var defaultAcronyms = []string{
 	"HTTPS", "HTML", "HTTP", "JSON", "UUID",
 	"API", "CSS", "DNS", "EOF", "SQL",
 	"SSH", "SSL", "TCP", "TLS", "UDP",
 	"URL", "XML",
 	"ID", "IP",
+}
+
+func sortAcronymsByLength(words []string) []string {
+	upper := make([]string, len(words))
+	for i, w := range words {
+		upper[i] = strings.ToUpper(w)
+	}
+	// Simple insertion sort by length descending (lists are small).
+	for i := 1; i < len(upper); i++ {
+		for j := i; j > 0 && len(upper[j]) > len(upper[j-1]); j-- {
+			upper[j], upper[j-1] = upper[j-1], upper[j]
+		}
+	}
+	return upper
+}
+
+func applyCaseOpts(opts []CaseOption) *caseConfig {
+	cfg := &caseConfig{acronyms: defaultAcronyms}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+	return cfg
+}
+
+// English title case skip list: articles, conjunctions, prepositions, and
+// other common short function words.
+var titleCaseSkipWords = map[string]bool{
+	"a": true, "an": true, "the": true,
+	"and": true, "but": true, "or": true, "nor": true,
+	"for": true, "yet": true, "so": true,
+	"at": true, "by": true, "in": true, "of": true,
+	"on": true, "to": true, "up": true,
+	"as": true, "is": true, "if": true,
 }
 
 // splitWords breaks s into lowercase words using a multi-pass algorithm:
@@ -29,19 +76,24 @@ var acronymsByLength = []string{
 //  3. Non-letter, non-digit runes (punctuation) are stripped.
 //  4. Every word is lowercased before returning.
 func splitWords(s string) []string {
+	return splitWordsWithAcronyms(s, defaultAcronyms)
+}
+
+func splitWordsWithAcronyms(s string, acronyms []string) []string {
 	if s == "" {
 		return nil
 	}
 
-	// Phase 1: split on delimiters.
 	segments := splitOnDelimiters(s)
 
 	var words []string
 	for _, seg := range segments {
-		words = append(words, splitSegment(seg)...)
+		words = append(words, splitSegment(seg, acronyms)...)
 	}
 	return words
 }
+
+// Compatibility: old call in splitWords already passes acronyms through splitWordsWithAcronyms.
 
 func splitOnDelimiters(s string) []string {
 	return strings.FieldsFunc(s, func(r rune) bool {
@@ -49,7 +101,7 @@ func splitOnDelimiters(s string) []string {
 	})
 }
 
-func splitSegment(seg string) []string {
+func splitSegment(seg string, acronyms []string) []string {
 	runes := []rune(seg)
 	var words []string
 	var current []rune
@@ -111,7 +163,7 @@ func splitSegment(seg string) []string {
 			remaining := string(upperRun[j:])
 			matched := false
 
-			for _, acr := range acronymsByLength {
+			for _, acr := range acronyms {
 				if strings.HasPrefix(remaining, acr) {
 					flush()
 					words = append(words, strings.ToLower(acr))
@@ -209,4 +261,90 @@ func ToTitleCase(s string) string {
 
 func ToScreamingSnake(s string) string {
 	return strings.ToUpper(strings.Join(splitWords(s), "_"))
+}
+
+// ToSnakeCaseWith returns a snake_case transformer using custom options.
+func ToSnakeCaseWith(opts ...CaseOption) func(string) string {
+	cfg := applyCaseOpts(opts)
+	return func(s string) string {
+		return strings.Join(splitWordsWithAcronyms(s, cfg.acronyms), "_")
+	}
+}
+
+// ToCamelCaseWith returns a camelCase transformer using custom options.
+func ToCamelCaseWith(opts ...CaseOption) func(string) string {
+	cfg := applyCaseOpts(opts)
+	return func(s string) string {
+		words := splitWordsWithAcronyms(s, cfg.acronyms)
+		if len(words) == 0 {
+			return ""
+		}
+		var b strings.Builder
+		b.WriteString(words[0])
+		for _, w := range words[1:] {
+			b.WriteString(capitalize(w))
+		}
+		return b.String()
+	}
+}
+
+// ToPascalCaseWith returns a PascalCase transformer using custom options.
+func ToPascalCaseWith(opts ...CaseOption) func(string) string {
+	cfg := applyCaseOpts(opts)
+	return func(s string) string {
+		words := splitWordsWithAcronyms(s, cfg.acronyms)
+		var b strings.Builder
+		for _, w := range words {
+			b.WriteString(capitalize(w))
+		}
+		return b.String()
+	}
+}
+
+// ToKebabCaseWith returns a kebab-case transformer using custom options.
+func ToKebabCaseWith(opts ...CaseOption) func(string) string {
+	cfg := applyCaseOpts(opts)
+	return func(s string) string {
+		return strings.Join(splitWordsWithAcronyms(s, cfg.acronyms), "-")
+	}
+}
+
+// ToTitleCaseWith returns a Title Case transformer using custom options.
+func ToTitleCaseWith(opts ...CaseOption) func(string) string {
+	cfg := applyCaseOpts(opts)
+	return func(s string) string {
+		words := splitWordsWithAcronyms(s, cfg.acronyms)
+		capitalized := make([]string, len(words))
+		for i, w := range words {
+			capitalized[i] = capitalize(w)
+		}
+		return strings.Join(capitalized, " ")
+	}
+}
+
+// ToScreamingSnakeWith returns a SCREAMING_SNAKE transformer using custom options.
+func ToScreamingSnakeWith(opts ...CaseOption) func(string) string {
+	cfg := applyCaseOpts(opts)
+	return func(s string) string {
+		return strings.ToUpper(strings.Join(splitWordsWithAcronyms(s, cfg.acronyms), "_"))
+	}
+}
+
+// ToTitleCaseEnglish returns English-aware title case. Capitalizes all words
+// except short function words (articles, conjunctions, prepositions) when they
+// appear mid-sentence. First and last word are always capitalized.
+func ToTitleCaseEnglish(s string) string {
+	words := splitWords(s)
+	if len(words) == 0 {
+		return ""
+	}
+	result := make([]string, len(words))
+	for i, w := range words {
+		if i == 0 || i == len(words)-1 || !titleCaseSkipWords[w] {
+			result[i] = capitalize(w)
+		} else {
+			result[i] = w
+		}
+	}
+	return strings.Join(result, " ")
 }

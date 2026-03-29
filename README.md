@@ -71,6 +71,19 @@ str.ToScreamingSnake("hello")   // "HELLO"
 
 Handles acronyms (ID, URL, HTTP, HTML, API, JSON, etc.), digit boundaries, and Unicode letters.
 
+Every case function has a `*With` variant for custom acronyms:
+
+```go
+toSnake := str.ToSnakeCaseWith(str.WithAcronyms("DAO", "NFT", "DEFI"))
+toSnake("DAOVoting") // "dao_voting"
+```
+
+**ToTitleCaseEnglish** skips articles, conjunctions, and prepositions mid-sentence:
+
+```go
+str.ToTitleCaseEnglish("a tale of two cities") // "A Tale of Two Cities"
+```
+
 **Reverse** reverses runes in a string.
 
 ```go

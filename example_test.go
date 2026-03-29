@@ -40,6 +40,23 @@ func ExampleToSnakeCase_pipe() {
 	// Output: hello_world
 }
 
+func ExampleToSnakeCaseWith() {
+	fn := str.ToSnakeCaseWith(str.WithAcronyms("DAO", "NFT"))
+	fmt.Println(fn("DAOVoting"))
+	fmt.Println(fn("NFTMarket"))
+	// Output:
+	// dao_voting
+	// nft_market
+}
+
+func ExampleToTitleCaseEnglish() {
+	fmt.Println(str.ToTitleCaseEnglish("a tale of two cities"))
+	fmt.Println(str.ToTitleCaseEnglish("back_to_the_future"))
+	// Output:
+	// A Tale of Two Cities
+	// Back to the Future
+}
+
 func ExampleToCamelCase() {
 	fmt.Println(str.ToCamelCase("hello_world"))
 	fmt.Println(str.ToCamelCase("HTMLParser"))
