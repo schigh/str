@@ -1,34 +1,42 @@
 package str
 
-import (
-	"math"
-	"strings"
-)
+import "unicode/utf8"
 
-type Padding int
-
-const (
-	PadLeft Padding = iota
-	PadRight
-)
-
-// Pad - left-pads or right-pads a string to a specified length
-// using a variable-length pad.  This function will always pad until the
-// length is reached, and in the case of pads with multiple characters,
-// will overshoot the length if necessary.
-func Pad(in string, pad string, length int, direction Padding) string {
-	inLen := len(in)
-	if inLen >= length {
-		return in
+// PadLeft returns a function that pads the input string on the left with the
+// given pad string until it reaches the specified width (in runes).
+// Multi-character pad strings are truncated on the final repetition to hit
+// exactly width. Empty pad string or width <= input length returns input unchanged.
+func PadLeft(padStr string, width int) func(string) string {
+	return func(s string) string {
+		return pad(s, padStr, width, true)
 	}
+}
 
-	numPads := int(math.Ceil(float64(length-inLen) / float64(len(pad))))
-	switch direction {
-	case PadLeft:
-		return strings.Repeat(pad, numPads) + in
-	case PadRight:
-		return in + strings.Repeat(pad, numPads)
-	default:
-		return in
+// PadRight returns a function that pads the input string on the right with the
+// given pad string until it reaches the specified width (in runes).
+func PadRight(padStr string, width int) func(string) string {
+	return func(s string) string {
+		return pad(s, padStr, width, false)
 	}
+}
+
+func pad(s, padStr string, width int, left bool) string {
+	if padStr == "" || width <= 0 {
+		return s
+	}
+	inputLen := utf8.RuneCountInString(s)
+	if inputLen >= width {
+		return s
+	}
+	needed := width - inputLen
+	padRunes := []rune(padStr)
+	buf := make([]rune, 0, needed)
+	for len(buf) < needed {
+		buf = append(buf, padRunes...)
+	}
+	buf = buf[:needed]
+	if left {
+		return string(buf) + s
+	}
+	return s + string(buf)
 }

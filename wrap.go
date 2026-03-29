@@ -1,99 +1,137 @@
 package str
 
 import (
-	"math"
 	"strings"
+	"unicode/utf8"
 )
 
-type WrapBehavior uint
+// WrapOption configures the behavior of Wrap.
+type WrapOption func(*wrapConfig)
+
+type wrapBehavior int
 
 const (
-	WrapBeforeWord WrapBehavior = iota
-	WrapAfterWord
-	WrapLiteral
+	behaviorBeforeWord wrapBehavior = iota
+	behaviorAfterWord
+	behaviorHardBreak
 )
 
-// The user options for the wrap
-type WrapOptions struct {
-	Width     uint
-	LineBreak string
-	Behavior  WrapBehavior
+type wrapConfig struct {
+	behavior  wrapBehavior
+	lineBreak string
+	indent    string
 }
 
-var defaultWrapOptions *WrapOptions
+// WrapBeforeWord wraps before the word that would extend past the line width.
+var WrapBeforeWord WrapOption = func(c *wrapConfig) { c.behavior = behaviorBeforeWord }
 
-func init() {
-	defaultWrapOptions = &WrapOptions{
-		Width:     76,
-		LineBreak: "\n",
-		Behavior:  WrapBeforeWord,
+// WrapAfterWord wraps after the word that extends past the line width.
+var WrapAfterWord WrapOption = func(c *wrapConfig) { c.behavior = behaviorAfterWord }
+
+// WrapHardBreak breaks mid-word at exactly the line width.
+var WrapHardBreak WrapOption = func(c *wrapConfig) { c.behavior = behaviorHardBreak }
+
+// WithLineBreak sets the line break string (default "\n").
+func WithLineBreak(lb string) WrapOption {
+	return func(c *wrapConfig) { c.lineBreak = lb }
+}
+
+// WithIndent sets a prefix for continuation lines.
+func WithIndent(indent string) WrapOption {
+	return func(c *wrapConfig) { c.indent = indent }
+}
+
+// Wrap returns a function that wraps text at the specified width (in runes).
+// Default behavior is WrapBeforeWord with "\n" line breaks.
+// Width of 0 returns input unchanged.
+func Wrap(width int, opts ...WrapOption) func(string) string {
+	cfg := &wrapConfig{
+		behavior:  behaviorBeforeWord,
+		lineBreak: "\n",
+	}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+	return func(s string) string {
+		if width <= 0 || s == "" {
+			return s
+		}
+		switch cfg.behavior {
+		case behaviorHardBreak:
+			return wrapHard(s, width, cfg)
+		case behaviorAfterWord:
+			return wrapAfterWord(s, width, cfg)
+		default:
+			return wrapBeforeWord(s, width, cfg)
+		}
 	}
 }
 
-// SetWrapOptions - set the global wordwrap options
-func SetWrapOptions(options *WrapOptions) {
-	defaultWrapOptions = options
-}
-
-// Wrap - Perform word wrap on a string
-func Wrap(in string) string {
-	return WrapWithOptions(in, defaultWrapOptions)
-}
-
-// WrapWithOptions - Perform word wrap with user options
-func WrapWithOptions(in string, options *WrapOptions) string {
-	fields := strings.Fields(in)
-	if options.Behavior == WrapLiteral {
-		return wrapLiteral(strings.Join(fields, ` `), options.Width, options.LineBreak)
-	} else if options.Behavior == WrapAfterWord {
-		return wrapAfterWord(fields, options.Width, options.LineBreak)
+func wrapHard(s string, width int, cfg *wrapConfig) string {
+	runes := []rune(s)
+	var b strings.Builder
+	for i := 0; i < len(runes); {
+		if i > 0 {
+			b.WriteString(cfg.lineBreak)
+			b.WriteString(cfg.indent)
+		}
+		end := min(i+width, len(runes))
+		b.WriteString(string(runes[i:end]))
+		i = end
 	}
-
-	return wrapBeforeWord(fields, options.Width, options.LineBreak)
+	return b.String()
 }
 
-func wrapLiteral(in string, width uint, lineBreak string) string {
-	lines := uint(math.Ceil(float64(len(in)) / float64(width)))
-	var out string
-	var i uint
-	for i = 0; i < lines; i++ {
-		start := i * width
-		remain := in[start:]
-		if len(remain) <= int(width) {
-			out += remain
+func wrapBeforeWord(s string, width int, cfg *wrapConfig) string {
+	words := strings.Fields(s)
+	if len(words) == 0 {
+		return s
+	}
+	var b strings.Builder
+	lineLen := 0
+	for i, word := range words {
+		wLen := utf8.RuneCountInString(word)
+		if i == 0 {
+			b.WriteString(word)
+			lineLen = wLen
 			continue
 		}
-		out += in[start:start+width] + lineBreak
+		if lineLen+1+wLen > width {
+			b.WriteString(cfg.lineBreak)
+			b.WriteString(cfg.indent)
+			b.WriteString(word)
+			lineLen = utf8.RuneCountInString(cfg.indent) + wLen
+		} else {
+			b.WriteByte(' ')
+			b.WriteString(word)
+			lineLen += 1 + wLen
+		}
 	}
-
-	return out
+	return b.String()
 }
 
-func wrapBeforeWord(words []string, width uint, lineBreak string) string {
-	var out, line string
-	for _, word := range words {
-		_line := line + word
-		if len(_line) > int(width) {
-			out += strings.TrimSpace(line) + lineBreak
-			line = word + " "
+func wrapAfterWord(s string, width int, cfg *wrapConfig) string {
+	words := strings.Fields(s)
+	if len(words) == 0 {
+		return s
+	}
+	var b strings.Builder
+	lineLen := 0
+	for i, word := range words {
+		wLen := utf8.RuneCountInString(word)
+		if i == 0 {
+			b.WriteString(word)
+			lineLen = wLen
 			continue
 		}
-		line += word + " "
-	}
-	out += strings.TrimSpace(line)
-	return out
-}
-
-func wrapAfterWord(words []string, width uint, lineBreak string) string {
-	var out, line string
-	for _, word := range words {
-		if len(line)+1 > int(width) {
-			out += strings.TrimSpace(line) + lineBreak
-			line = word + " "
-			continue
+		b.WriteByte(' ')
+		b.WriteString(word)
+		lineLen += 1 + wLen
+		if lineLen >= width && i < len(words)-1 {
+			b.WriteString(cfg.lineBreak)
+			b.WriteString(cfg.indent)
+			lineLen = utf8.RuneCountInString(cfg.indent)
 		}
-		line += word + " "
 	}
-	out += strings.TrimSpace(line)
-	return out
+	return b.String()
 }

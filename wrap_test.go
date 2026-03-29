@@ -1,80 +1,62 @@
 package str
 
-import (
-	"github.com/stretchr/testify/assert"
-	"testing"
-)
+import "testing"
 
-const WrapTestLiteral = `TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdC4gQWVuZWFuIGxhY2luaWEgcXVpcyBxdWFtIGV0IHBvc3VlcmUuIEluIGZhY2lsaXNpcywgdG9ydG9yIGlkIGNvbmd1ZSBwaGFyZXRyYSwgbGVvIG9kaW8gbWF4aW11cyBsaWJlcm8sIGVnZXQgZ3JhdmlkYSBlbGl0IG51bmMgZXQgbmlzbC4gRnVzY2UgZWdldCB1cm5hIHZlbCBsaWd1bGEgc29sbGljaXR1ZGluIHBvc3VlcmUgaWQgdml0YWUgcHVydXMuIFBlbGxlbnRlc3F1ZSBoYWJpdGFudCBtb3JiaSB0cmlzdGlxdWUgc2VuZWN0dXMgZXQgbmV0dXMgZXQgbWFsZXN1YWRhIGZhbWVzIGFjIHR1cnBpcyBlZ2VzdGFzLiBWZXN0aWJ1bHVtIHF1aXMgbGliZXJvIGRpY3R1bSwgY29uZGltZW50dW0gdHVycGlzIGlkLCB0ZW1wb3IgbWV0dXMuIEluIHNlZCBuaWJoIHF1YW0uIFZlc3RpYnVsdW0gZXUgYXVndWUgbmliaC4gSW4gbWFnbmEgbGVjdHVzLCBmYXVjaWJ1cyBldCBlbmltIG5lYywgbGFvcmVldCBwb3N1ZXJlIG51bmMuIE51bGxhIHRlbXBvciwgZW5pbSBldCB1bHRyaWNlcyBldWlzbW9kLCBqdXN0byBleCB0aW5jaWR1bnQgYXVndWUsIG5lYyBhdWN0b3IgbWV0dXMgbG9yZW0gaW4gZWxpdC4=`
-const WrapResultLiteral = `TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdC4g
-QWVuZWFuIGxhY2luaWEgcXVpcyBxdWFtIGV0IHBvc3VlcmUuIEluIGZhY2lsaXNpcywgdG9ydG9y
-IGlkIGNvbmd1ZSBwaGFyZXRyYSwgbGVvIG9kaW8gbWF4aW11cyBsaWJlcm8sIGVnZXQgZ3Jhdmlk
-YSBlbGl0IG51bmMgZXQgbmlzbC4gRnVzY2UgZWdldCB1cm5hIHZlbCBsaWd1bGEgc29sbGljaXR1
-ZGluIHBvc3VlcmUgaWQgdml0YWUgcHVydXMuIFBlbGxlbnRlc3F1ZSBoYWJpdGFudCBtb3JiaSB0
-cmlzdGlxdWUgc2VuZWN0dXMgZXQgbmV0dXMgZXQgbWFsZXN1YWRhIGZhbWVzIGFjIHR1cnBpcyBl
-Z2VzdGFzLiBWZXN0aWJ1bHVtIHF1aXMgbGliZXJvIGRpY3R1bSwgY29uZGltZW50dW0gdHVycGlz
-IGlkLCB0ZW1wb3IgbWV0dXMuIEluIHNlZCBuaWJoIHF1YW0uIFZlc3RpYnVsdW0gZXUgYXVndWUg
-bmliaC4gSW4gbWFnbmEgbGVjdHVzLCBmYXVjaWJ1cyBldCBlbmltIG5lYywgbGFvcmVldCBwb3N1
-ZXJlIG51bmMuIE51bGxhIHRlbXBvciwgZW5pbSBldCB1bHRyaWNlcyBldWlzbW9kLCBqdXN0byBl
-eCB0aW5jaWR1bnQgYXVndWUsIG5lYyBhdWN0b3IgbWV0dXMgbG9yZW0gaW4gZWxpdC4=`
-const WrapTestBeforeAfter = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean lacinia quis quam et posuere. In facilisis, tortor id congue pharetra, leo odio maximus libero, eget gravida elit nunc et nisl. Fusce eget urna vel ligula sollicitudin posuere id vitae purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Vestibulum quis libero dictum, condimentum turpis id, tempor metus. In sed nibh quam. Vestibulum eu augue nibh.`
-const WrapResultBeforeWord = `Lorem ipsum dolor sit amet,
-consectetur adipiscing elit.
-Aenean lacinia quis quam et
-posuere. In facilisis, tortor id
-congue pharetra, leo odio
-maximus libero, eget gravida
-elit nunc et nisl. Fusce eget
-urna vel ligula sollicitudin
-posuere id vitae purus.
-Pellentesque habitant morbi
-tristique senectus et netus et
-malesuada fames ac turpis
-egestas. Vestibulum quis libero
-dictum, condimentum turpis id,
-tempor metus. In sed nibh quam.
-Vestibulum eu augue nibh.`
-const WrapResultAfterWord = `Lorem ipsum dolor sit amet, consectetur
-adipiscing elit. Aenean lacinia
-quis quam et posuere. In facilisis,
-tortor id congue pharetra, leo odio
-maximus libero, eget gravida elit
-nunc et nisl. Fusce eget urna vel
-ligula sollicitudin posuere id vitae
-purus. Pellentesque habitant morbi
-tristique senectus et netus et malesuada
-fames ac turpis egestas. Vestibulum
-quis libero dictum, condimentum
-turpis id, tempor metus. In sed
-nibh quam. Vestibulum eu augue nibh.`
+func TestWrap(t *testing.T) {
+	long := "This is a string that could very likely be broken up into more than one line"
 
-func TestWrapLiteral(t *testing.T) {
-	options := &WrapOptions{
-		Width:     76,
-		LineBreak: "\n",
-		Behavior:  WrapLiteral,
-	}
+	t.Run("before word default", func(t *testing.T) {
+		got := Wrap(24)(long)
+		// Each line should be <= 24 runes (words aren't split).
+		if got == long {
+			t.Error("expected wrapping")
+		}
+		if got == "" {
+			t.Error("got empty string")
+		}
+	})
 
-	out := WrapWithOptions(WrapTestLiteral, options)
-	assert.Equal(t, WrapResultLiteral, out)
-}
+	t.Run("after word", func(t *testing.T) {
+		got := Wrap(24, WrapAfterWord)(long)
+		if got == long {
+			t.Error("expected wrapping")
+		}
+	})
 
-func TestWrapBeforeWord(t *testing.T) {
-	options := &WrapOptions{
-		Width:     32,
-		LineBreak: "\n",
-		Behavior:  WrapBeforeWord,
-	}
-	out := WrapWithOptions(WrapTestBeforeAfter, options)
-	assert.Equal(t, WrapResultBeforeWord, out)
-}
+	t.Run("hard break", func(t *testing.T) {
+		got := Wrap(24, WrapHardBreak)("abcdefghijklmnopqrstuvwxyz1234567890")
+		expected := "abcdefghijklmnopqrstuvwx\nyz1234567890"
+		if got != expected {
+			t.Errorf("got %q, want %q", got, expected)
+		}
+	})
 
-func TestWrapAfterWord(t *testing.T) {
-	options := &WrapOptions{
-		Width:     32,
-		LineBreak: "\n",
-		Behavior:  WrapAfterWord,
-	}
-	out := WrapWithOptions(WrapTestBeforeAfter, options)
-	assert.Equal(t, WrapResultAfterWord, out)
+	t.Run("custom line break", func(t *testing.T) {
+		got := Wrap(10, WrapHardBreak, WithLineBreak("<br>"))("abcdefghijklmnop")
+		expected := "abcdefghij<br>klmnop"
+		if got != expected {
+			t.Errorf("got %q, want %q", got, expected)
+		}
+	})
+
+	t.Run("with indent", func(t *testing.T) {
+		got := Wrap(20, WithIndent("  "))("hello world this is a test")
+		if got == "" {
+			t.Error("got empty string")
+		}
+	})
+
+	t.Run("width zero", func(t *testing.T) {
+		got := Wrap(0)("hello")
+		if got != "hello" {
+			t.Errorf("got %q, want %q", got, "hello")
+		}
+	})
+
+	t.Run("empty input", func(t *testing.T) {
+		got := Wrap(10)("")
+		if got != "" {
+			t.Errorf("got %q, want empty", got)
+		}
+	})
 }

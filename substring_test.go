@@ -1,53 +1,34 @@
 package str
 
-import (
-	"fmt"
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-)
-
-func ExampleSubstring() {
-	fmt.Println(Substring("This is a sentence", 5, 2))
-	// Output: is
-}
+import "testing"
 
 func TestSubstring(t *testing.T) {
-	testString := "This is a test string that you should use for tests"
-
-	// forward in bounds
-	s1 := Substring(testString, 0, 4)
-	assert.Equal(t, "This", s1)
-
-	// backward in bounds
-	s2 := Substring(testString, -5, 4)
-	assert.Equal(t, "test", s2)
-
-	// forward in bounds
-	s3 := Substring(testString, 10, 11)
-	assert.Equal(t, "test string", s3)
-
-	// backward in bounds
-	s4 := Substring(testString, -13, 3)
-	assert.Equal(t, "use", s4)
-
-	// forward with too large length
-	s5 := Substring(testString, 38, 100)
-	assert.Equal(t, "use for tests", s5)
-
-	// backward with too large length
-	s6 := Substring(testString, -13, 100)
-	assert.Equal(t, "use for tests", s6)
-
-	// forward with invalid start
-	s7 := Substring(testString, 60, 1)
-	assert.Equal(t, "", s7)
-
-	// backward with invalid start
-	s8 := Substring(testString, -60, 1)
-	assert.Equal(t, "", s8)
-
-	// zero length
-	s9 := Substring(testString, 0, 0)
-	assert.Equal(t, "", s9)
+	tests := []struct {
+		name     string
+		start    int
+		length   int
+		input    string
+		expected string
+	}{
+		{"normal", 0, 3, "1234567890", "123"},
+		{"offset", 1, 3, "1234567890", "234"},
+		{"negative start", -3, 2, "abcde", "cd"},
+		{"negative start full", -3, 3, "abcde", "cde"},
+		{"negative length", 0, -1, "hello", ""},
+		{"zero length", 0, 0, "hello", ""},
+		{"out of bounds start", 20, 3, "hello", ""},
+		{"length exceeds", 3, 100, "hello", "lo"},
+		{"empty input", 0, 3, "", ""},
+		{"negative out of bounds", -10, 3, "hello", "hel"},
+		{"multibyte", 0, 2, "你好世界", "你好"},
+		{"negative start single", -1, 3, "1234567890", "0"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := Substring(tt.start, tt.length)(tt.input)
+			if got != tt.expected {
+				t.Errorf("Substring(%d, %d)(%q) = %q, want %q", tt.start, tt.length, tt.input, got, tt.expected)
+			}
+		})
+	}
 }
