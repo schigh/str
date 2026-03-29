@@ -5,73 +5,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>str - Pipeline-First String Toolkit for Go</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&family=Orbitron:wght@400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&family=Baloo+2:wght@400;500;600;700;800&display=swap');
 
 :root {
-  --neon-pink: #ff4136;
-  --neon-cyan: #00d4ff;
-  --neon-purple: #6b7fff;
-  --neon-yellow: #ffc020;
-  --neon-green: #00e5a0;
-  --neon-orange: #ff6a1a;
-  --dark-bg: #0b1120;
-  --darker-bg: #060d18;
-  --grid-color: rgba(0, 140, 200, 0.08);
-  --card-bg: rgba(10, 18, 35, 0.9);
-  --card-border: rgba(0, 212, 255, 0.12);
+  --red: #e63946;
+  --gold: #f4a523;
+  --yellow: #f7d954;
+  --green: #2a9d4e;
+  --blue: #2274a5;
+  --indigo: #3b3080;
+  --cream: #faf5ee;
+  --warm-white: #fffdf8;
+  --text: #2c2c2c;
+  --text-light: #6b6560;
+  --code-bg: #fdf6ed;
+  --card-bg: #ffffff;
+  --rainbow: linear-gradient(90deg, var(--red), var(--gold), var(--yellow), var(--green), var(--blue), var(--indigo));
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-  background: var(--dark-bg);
-  color: #c0cce0;
-  font-family: 'Space Mono', monospace;
+  background: var(--cream);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
   line-height: 1.7;
-  overflow-x: hidden;
-}
-
-/* Animated grid background */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background:
-    linear-gradient(var(--grid-color) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
-  background-size: 60px 60px;
-  animation: gridScroll 20s linear infinite;
-  z-index: -2;
-}
-
-@keyframes gridScroll {
-  0% { transform: perspective(500px) rotateX(0deg) translateY(0); }
-  100% { transform: perspective(500px) rotateX(0deg) translateY(60px); }
-}
-
-/* Gradient overlay */
-body::after {
-  content: '';
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: radial-gradient(ellipse at 50% 0%, rgba(0, 140, 200, 0.12) 0%, transparent 70%);
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Scanline effect */
-.scanlines {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    rgba(0, 0, 0, 0.05) 0px,
-    rgba(0, 0, 0, 0.05) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  pointer-events: none;
-  z-index: 9999;
+  font-weight: 400;
 }
 
 .container {
@@ -80,332 +39,22 @@ body::after {
   padding: 0 24px;
 }
 
-/* ---- HERO ---- */
-.hero {
-  text-align: center;
-  padding: 100px 0 80px;
-  position: relative;
+/* ---- RAINBOW STRIPE ---- */
+.rainbow-stripe {
+  height: 6px;
+  background: var(--rainbow);
 }
 
-.hero h1 {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 900;
-  font-size: 7rem;
-  letter-spacing: 0.15em;
-  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-yellow), var(--neon-orange), var(--neon-pink));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 106, 26, 0.2));
-  margin-bottom: 16px;
-  animation: titlePulse 3s ease-in-out infinite alternate;
+.rainbow-stripe-thick {
+  height: 12px;
+  background: var(--rainbow);
+  box-shadow: 0 4px 20px rgba(244, 165, 35, 0.2);
 }
 
-@keyframes titlePulse {
-  0% { filter: drop-shadow(0 0 30px rgba(0, 212, 255, 0.3)) drop-shadow(0 0 60px rgba(255, 106, 26, 0.2)); }
-  100% { filter: drop-shadow(0 0 50px rgba(0, 212, 255, 0.5)) drop-shadow(0 0 80px rgba(255, 106, 26, 0.35)); }
-}
-
-.hero .tagline {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1.25rem;
-  color: var(--neon-cyan);
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  margin-bottom: 40px;
-  text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
-}
-
-.hero .sub {
-  font-size: 1rem;
-  color: rgba(180, 200, 224, 0.7);
-  max-width: 600px;
-  margin: 0 auto 40px;
-}
-
-.badge-row {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
-}
-
-.badge-row img { height: 22px; }
-
-.install-box {
-  display: inline-block;
-  background: rgba(0, 212, 255, 0.08);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-  border-radius: 8px;
-  padding: 14px 32px;
-  font-size: 1.1rem;
-  color: var(--neon-cyan);
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.install-box:hover {
-  background: rgba(0, 212, 255, 0.15);
-  border-color: var(--neon-cyan);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
-}
-.install-box code { font-family: 'Space Mono', monospace; }
-
-/* ---- HERO CODE BLOCK ---- */
-.hero-code {
-  max-width: 680px;
-  margin: 40px auto 0;
-  background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(40, 80, 140, 0.3);
-  border-radius: 12px;
-  padding: 28px 32px;
-  text-align: left;
-  font-size: 0.9rem;
-  line-height: 1.8;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 40px rgba(40, 80, 140, 0.1), inset 0 0 40px rgba(0, 0, 0, 0.3);
-}
-.hero-code::before {
-  content: 'main.go';
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  font-size: 0.65rem;
-  color: rgba(40, 80, 140, 0.5);
-  font-family: 'Space Mono', monospace;
-}
-
-/* ---- SECTIONS ---- */
-section {
-  padding: 80px 0;
-  border-top: 1px solid rgba(40, 80, 140, 0.1);
-}
-
-h2 {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 700;
-  font-size: 2.2rem;
-  margin-bottom: 12px;
-  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-yellow), var(--neon-orange));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-}
-
-h2 .icon {
-  display: inline-block;
-  margin-right: 12px;
-  font-size: 1.8rem;
-  -webkit-text-fill-color: initial;
-}
-
-.section-desc {
-  color: rgba(180, 200, 224, 0.6);
-  margin-bottom: 40px;
-  max-width: 700px;
-  font-size: 0.95rem;
-}
-
-/* ---- FUNCTION CARDS ---- */
-.fn-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
-  margin-bottom: 20px;
-}
-
-.fn-card {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  border-radius: 10px;
-  padding: 24px;
-  transition: all 0.25s;
-  position: relative;
-  overflow: hidden;
-}
-.fn-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--neon-cyan), var(--neon-yellow), var(--neon-orange), var(--neon-pink));
-  opacity: 0;
-  transition: opacity 0.25s;
-}
-.fn-card:hover {
-  border-color: rgba(0, 212, 255, 0.4);
-  box-shadow: 0 0 30px rgba(0, 212, 255, 0.08);
-  transform: translateY(-2px);
-}
-.fn-card:hover::before { opacity: 1; }
-
-.fn-name {
-  font-family: 'Space Mono', monospace;
-  font-weight: 700;
-  font-size: 1.05rem;
-  color: var(--neon-green);
-  margin-bottom: 6px;
-  text-shadow: 0 0 10px rgba(0, 229, 160, 0.3);
-}
-
-.fn-sig {
-  font-size: 0.75rem;
-  color: rgba(180, 200, 224, 0.4);
-  margin-bottom: 10px;
-  word-break: break-all;
-}
-
-.fn-desc {
-  font-size: 0.85rem;
-  color: rgba(180, 200, 224, 0.7);
-  margin-bottom: 14px;
-  line-height: 1.6;
-}
-
-.fn-example {
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(40, 80, 140, 0.15);
-  border-radius: 6px;
-  padding: 12px 14px;
-  font-size: 0.78rem;
-  overflow-x: auto;
-  line-height: 1.7;
-}
-
-/* Syntax colors */
-.kw { color: var(--neon-pink); }
-.fn { color: var(--neon-cyan); }
-.str { color: var(--neon-yellow); }
-.cm { color: rgba(180, 200, 224, 0.35); }
-.num { color: var(--neon-orange); }
-.typ { color: var(--neon-purple); }
-.op { color: rgba(180, 200, 224, 0.5); }
-
-/* ---- FULL-WIDTH CODE BLOCKS ---- */
-.code-block {
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(40, 80, 140, 0.2);
-  border-radius: 10px;
-  padding: 24px 28px;
-  font-size: 0.85rem;
-  line-height: 1.8;
-  overflow-x: auto;
-  margin-bottom: 30px;
-  box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
-}
-
-/* ---- STATS BAR ---- */
-.stats {
-  display: flex;
-  justify-content: center;
-  gap: 48px;
-  padding: 48px 0;
-  flex-wrap: wrap;
-}
-
-.stat {
-  text-align: center;
-}
-
-.stat-num {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 900;
-  font-size: 3rem;
-  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-yellow));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.3));
-}
-
-.stat-label {
-  font-size: 0.75rem;
-  color: rgba(180, 200, 224, 0.5);
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  margin-top: 4px;
-}
-
-/* ---- PATTERN CARDS ---- */
-.pattern-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 20px;
-}
-
-.pattern-card {
-  background: var(--card-bg);
-  border: 1px solid rgba(255, 106, 26, 0.15);
-  border-radius: 10px;
-  padding: 24px;
-}
-
-.pattern-card h3 {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.9rem;
-  color: var(--neon-pink);
-  margin-bottom: 6px;
-  text-shadow: 0 0 10px rgba(255, 106, 26, 0.3);
-}
-
-.pattern-card .pattern-desc {
-  font-size: 0.8rem;
-  color: rgba(180, 200, 224, 0.5);
-  margin-bottom: 14px;
-}
-
-/* ---- EDGE CASE TABLE ---- */
-.edge-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.8rem;
-  margin: 20px 0;
-}
-.edge-table th {
-  text-align: left;
-  padding: 10px 14px;
-  color: var(--neon-cyan);
-  border-bottom: 1px solid rgba(0, 212, 255, 0.2);
-  font-family: 'Orbitron', sans-serif;
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-}
-.edge-table td {
-  padding: 8px 14px;
-  border-bottom: 1px solid rgba(40, 80, 140, 0.07);
-  color: rgba(180, 200, 224, 0.65);
-}
-.edge-table tr:hover td { background: rgba(0, 212, 255, 0.03); }
-.edge-table code {
-  color: var(--neon-green);
-  font-size: 0.78rem;
-}
-
-/* ---- FOOTER ---- */
-footer {
-  text-align: center;
-  padding: 60px 0 40px;
-  border-top: 1px solid rgba(40, 80, 140, 0.1);
-  color: rgba(180, 200, 224, 0.3);
-  font-size: 0.8rem;
-}
-footer a {
-  color: var(--neon-pink);
-  text-decoration: none;
-}
-footer a:hover { text-shadow: 0 0 10px rgba(255, 106, 26, 0.5); }
-
-.retro-divider {
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-yellow), var(--neon-orange), var(--neon-pink), transparent);
-  margin: 0;
-  border: none;
-  box-shadow: 0 0 20px rgba(255, 106, 26, 0.2);
+/* Flat rainbow stripe */
+.arc-stripes {
+  height: 6px;
+  background: var(--rainbow);
 }
 
 /* ---- NAV ---- */
@@ -413,10 +62,11 @@ nav {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(6, 13, 24, 0.94);
+  background: rgba(255, 253, 248, 0.95);
   backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 212, 255, 0.1);
-  padding: 12px 0;
+  padding: 14px 0;
+  border-bottom: 3px solid transparent;
+  border-image: var(--rainbow) 1;
 }
 nav .container {
   display: flex;
@@ -424,64 +74,392 @@ nav .container {
   align-items: center;
 }
 nav .logo {
-  font-family: 'Orbitron', sans-serif;
-  font-weight: 900;
-  font-size: 1.3rem;
-  color: var(--neon-cyan);
-  text-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.6rem;
+  background: var(--rainbow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   text-decoration: none;
 }
 nav .links {
   display: flex;
-  gap: 24px;
+  gap: 20px;
+  flex-wrap: wrap;
 }
 nav .links a {
-  color: rgba(180, 200, 224, 0.6);
+  color: var(--text-light);
   text-decoration: none;
-  font-size: 0.8rem;
-  letter-spacing: 0.05em;
+  font-size: 0.85rem;
+  font-weight: 500;
   transition: color 0.2s;
 }
-nav .links a:hover {
-  color: var(--neon-cyan);
-  text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+nav .links a:hover { color: var(--blue); }
+
+/* ---- HERO ---- */
+.hero {
+  text-align: center;
+  padding: 80px 0 60px;
+  background: var(--warm-white);
+}
+
+.hero h1 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 8rem;
+  letter-spacing: 0.1em;
+  background: var(--rainbow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.hero .tagline {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.3rem;
+  color: var(--text-light);
+  letter-spacing: 0.15em;
+  margin-bottom: 32px;
+}
+
+.hero .sub {
+  font-size: 1.05rem;
+  color: var(--text-light);
+  max-width: 580px;
+  margin: 0 auto 32px;
+}
+.hero .sub code {
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--indigo);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.9em;
+}
+
+.badge-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+}
+.badge-row img { height: 22px; }
+
+.install-box {
+  display: inline-block;
+  background: var(--card-bg);
+  border: 2px solid #eee4d8;
+  border-radius: 12px;
+  padding: 14px 28px;
+  font-family: 'Space Mono', monospace;
+  font-size: 1rem;
+  color: var(--indigo);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.install-box:hover {
+  border-color: var(--blue);
+  box-shadow: 0 4px 20px rgba(34, 116, 165, 0.12);
+}
+
+/* ---- HERO CODE ---- */
+.hero-code {
+  max-width: 620px;
+  margin: 36px auto 0;
+  background: var(--card-bg);
+  border: 2px solid #eee4d8;
+  border-radius: 14px;
+  padding: 24px 28px;
+  text-align: left;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.05);
+  position: relative;
+  white-space: pre;
+}
+.hero-code::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  border-radius: 14px 14px 0 0;
+  background: var(--rainbow);
+}
+
+/* ---- SECTIONS ---- */
+section {
+  padding: 64px 0;
+}
+section:nth-child(even) { background: var(--warm-white); }
+section:nth-child(odd) { background: var(--cream); }
+
+h2 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+
+h2 .icon { margin-right: 10px; }
+
+.section-desc {
+  color: var(--text-light);
+  margin-bottom: 36px;
+  max-width: 680px;
+  font-size: 0.95rem;
+}
+.section-desc code {
+  background: var(--code-bg);
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.85em;
+  color: var(--indigo);
+}
+
+/* ---- FUNCTION CARDS ---- */
+.fn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 18px;
+}
+
+.fn-card {
+  background: var(--card-bg);
+  border: 2px solid #ede6db;
+  border-radius: 12px;
+  padding: 22px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.fn-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--rainbow);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.fn-card:hover {
+  border-color: var(--blue);
+  box-shadow: 0 4px 20px rgba(34, 116, 165, 0.08);
+  transform: translateY(-2px);
+}
+.fn-card:hover::before { opacity: 1; }
+.fn-card::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 40px; height: 40px;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0px, transparent 3px,
+    rgba(230, 57, 70, 0.06) 3px, rgba(230, 57, 70, 0.06) 5px,
+    transparent 5px, transparent 8px,
+    rgba(244, 165, 35, 0.06) 8px, rgba(244, 165, 35, 0.06) 10px,
+    transparent 10px, transparent 13px,
+    rgba(34, 116, 165, 0.06) 13px, rgba(34, 116, 165, 0.06) 15px
+  );
+  border-radius: 0 12px 0 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.fn-card:hover::after { opacity: 1; }
+
+.fn-name {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1rem;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+
+.fn-sig {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-light);
+  margin-bottom: 8px;
+  word-break: break-all;
+}
+
+.fn-desc {
+  font-size: 0.88rem;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+.fn-example {
+  background: var(--code-bg);
+  border: 1px solid #ede6db;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.75rem;
+  overflow-x: auto;
+  line-height: 1.8;
+  white-space: pre;
+}
+
+/* Syntax colors */
+.kw { color: var(--indigo); font-weight: 700; }
+.fn { color: var(--blue); }
+.str { color: var(--green); }
+.cm { color: #b0a090; }
+.num { color: var(--red); }
+.typ { color: var(--indigo); }
+.op { color: var(--text-light); }
+
+/* ---- STATS ---- */
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  padding: 52px 0;
+  background: var(--warm-white);
+  flex-wrap: wrap;
+}
+
+.stat { text-align: center; }
+
+.stat-num {
+  font-family: 'Baloo 2', cursive;
+  font-size: 3.2rem;
+  background: var(--rainbow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* ---- PATTERNS ---- */
+.pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 18px;
+}
+
+.pattern-card {
+  background: var(--card-bg);
+  border: 2px solid #ede6db;
+  border-radius: 12px;
+  padding: 22px;
+}
+
+.pattern-card h3 {
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.95rem;
+  color: var(--red);
+  margin-bottom: 4px;
+}
+
+.pattern-card .pattern-desc {
+  font-size: 0.82rem;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+/* ---- EDGE CASE TABLE ---- */
+.edge-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  margin: 20px 0;
+  background: var(--card-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+.edge-table th {
+  text-align: left;
+  padding: 12px 16px;
+  color: var(--blue);
+  background: var(--code-bg);
+  font-family: 'Baloo 2', cursive;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #ede6db;
+}
+.edge-table td {
+  padding: 10px 16px;
+  border-bottom: 1px solid #f0ebe3;
+  color: var(--text-light);
+}
+.edge-table tr:hover td { background: #fdf9f3; }
+.edge-table code {
+  color: var(--green);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+}
+
+/* ---- TAGS ---- */
+.tag {
+  display: inline-block;
+  font-size: 0.55rem;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-left: 8px;
+  vertical-align: middle;
+  font-weight: 600;
+}
+.tag-pipe {
+  background: rgba(34, 116, 165, 0.1);
+  color: var(--blue);
+}
+.tag-standalone {
+  background: rgba(230, 57, 70, 0.1);
+  color: var(--red);
+}
+
+/* ---- FOOTER ---- */
+footer {
+  text-align: center;
+  padding: 48px 0 36px;
+  background: var(--warm-white);
+  color: var(--text-light);
+  font-size: 0.85rem;
+}
+footer a {
+  color: var(--blue);
+  text-decoration: none;
+  font-weight: 500;
+}
+footer a:hover { text-decoration: underline; }
+footer .footer-logo {
+  font-family: 'Baloo 2', cursive;
+  font-size: 1.8rem;
+  background: var(--rainbow);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 12px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .hero h1 { font-size: 3.5rem; }
+  .hero h1 { font-size: 4rem; }
   .fn-grid { grid-template-columns: 1fr; }
-  .stats { gap: 24px; }
-  .stat-num { font-size: 2rem; }
-  nav .links { gap: 12px; }
-  nav .links a { font-size: 0.7rem; }
-}
-
-/* Tag badges */
-.tag {
-  display: inline-block;
-  font-size: 0.6rem;
-  padding: 2px 8px;
-  border-radius: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin-left: 8px;
-  vertical-align: middle;
-}
-.tag-pipe {
-  background: rgba(0, 212, 255, 0.15);
-  color: var(--neon-cyan);
-  border: 1px solid rgba(0, 212, 255, 0.3);
-}
-.tag-standalone {
-  background: rgba(255, 102, 0, 0.15);
-  color: var(--neon-orange);
-  border: 1px solid rgba(255, 102, 0, 0.3);
+  .stats { gap: 28px; }
+  .stat-num { font-size: 2.2rem; }
+  nav .links { gap: 10px; }
 }
 </style>
 </head>
 <body>
-<div class="scanlines"></div>
+
+<div class="arc-stripes"></div>
 
 <nav>
   <div class="container">
@@ -532,7 +510,7 @@ slug <span class="op">:=</span> <span class="kw">normalize</span>(<span class="s
   </div>
 </header>
 
-<hr class="retro-divider">
+<div class="arc-stripes"></div>
 
 <!-- ==================== STATS ==================== -->
 <div class="stats">
@@ -542,12 +520,12 @@ slug <span class="op">:=</span> <span class="kw">normalize</span>(<span class="s
   <div class="stat"><div class="stat-num">4</div><div class="stat-label">Releases</div></div>
 </div>
 
-<hr class="retro-divider">
+<div class="rainbow-stripe"></div>
 
 <!-- ==================== COMPOSE ==================== -->
 <section id="compose">
   <div class="container">
-    <h2><span class="icon">&#x2B50;</span>Compose</h2>
+    <h2><span class="icon">&#x2728;</span>Compose</h2>
     <p class="section-desc">The core of str. Build reusable transformation pipelines from simple functions. Every transformer is <code>func(string) string</code>, and Pipe chains them left to right.</p>
 
     <div class="fn-grid">
@@ -646,52 +624,41 @@ trimLines(<span class="str">"  hello  \n  world  "</span>) <span class="cm">// "
         <div class="fn-name">ToPascalCase <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
         <div class="fn-desc">Converts to PascalCase. All words capitalized.</div>
-        <div class="fn-example">
-<span class="fn">str.ToPascalCase</span>(<span class="str">"hello_world"</span>) <span class="cm">// "HelloWorld"</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.ToPascalCase</span>(<span class="str">"hello_world"</span>) <span class="cm">// "HelloWorld"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">ToKebabCase <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
         <div class="fn-desc">Converts to kebab-case. Hyphen separated.</div>
-        <div class="fn-example">
-<span class="fn">str.ToKebabCase</span>(<span class="str">"HelloWorld"</span>) <span class="cm">// "hello-world"</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.ToKebabCase</span>(<span class="str">"HelloWorld"</span>) <span class="cm">// "hello-world"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">ToTitleCase <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
         <div class="fn-desc">Capitalizes every word. Language-agnostic.</div>
-        <div class="fn-example">
-<span class="fn">str.ToTitleCase</span>(<span class="str">"hello_world"</span>) <span class="cm">// "Hello World"</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.ToTitleCase</span>(<span class="str">"hello_world"</span>) <span class="cm">// "Hello World"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">ToTitleCaseEnglish <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
         <div class="fn-desc">English-aware title case. Skips articles, conjunctions, prepositions mid-sentence.</div>
-        <div class="fn-example">
-<span class="fn">str.ToTitleCaseEnglish</span>(<span class="str">"a tale of two cities"</span>)
-<span class="cm">// "A Tale of Two Cities"</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.ToTitleCaseEnglish</span>(<span class="str">"a tale of two cities"</span>) <span class="cm">// "A Tale of Two Cities"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">ToScreamingSnake <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
         <div class="fn-desc">SCREAMING_SNAKE_CASE. All uppercase.</div>
-        <div class="fn-example">
-<span class="fn">str.ToScreamingSnake</span>(<span class="str">"helloWorld"</span>) <span class="cm">// "HELLO_WORLD"</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.ToScreamingSnake</span>(<span class="str">"helloWorld"</span>) <span class="cm">// "HELLO_WORLD"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">*CaseWith + WithAcronyms <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func To*CaseWith(opts ...CaseOption) func(string) string</div>
-        <div class="fn-desc">All 6 case functions have a *With variant for custom acronyms. Pipeline-composable.</div>
+        <div class="fn-desc">All 6 case functions have a *With variant for custom domain acronyms.</div>
         <div class="fn-example">
 toSnake <span class="op">:=</span> <span class="fn">str.ToSnakeCaseWith</span>(<span class="fn">str.WithAcronyms</span>(<span class="str">"DAO"</span>, <span class="str">"NFT"</span>))
 toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</span>
@@ -702,48 +669,35 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
         <div class="fn-name">Reverse <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
         <div class="fn-desc">Reverses runes. Safe for multibyte UTF-8.</div>
-        <div class="fn-example">
-<span class="fn">str.Reverse</span>(<span class="str">"hello"</span>) <span class="cm">// "olleh"</span>
-<span class="fn">str.Reverse</span>(<span class="str">"&#x4F60;&#x597D;"</span>)   <span class="cm">// "&#x597D;&#x4F60;"</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.Reverse</span>(<span class="str">"hello"</span>) <span class="cm">// "olleh"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">CollapseWhitespace <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
-        <div class="fn-desc">All Unicode whitespace (spaces, tabs, newlines) collapsed to a single space. Trimmed.</div>
-        <div class="fn-example">
-<span class="fn">str.CollapseWhitespace</span>(<span class="str">"hello   \t\n  world"</span>)
-<span class="cm">// "hello world"</span>
-        </div>
+        <div class="fn-desc">All Unicode whitespace collapsed to a single space. Trimmed.</div>
+        <div class="fn-example"><span class="fn">str.CollapseWhitespace</span>(<span class="str">"hello   \t\n  world"</span>) <span class="cm">// "hello world"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">TrimSpace <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
-        <div class="fn-desc">Removes leading and trailing whitespace. Re-export of strings.TrimSpace for pipeline convenience.</div>
-        <div class="fn-example">
-<span class="fn">str.TrimSpace</span>(<span class="str">"  hello  "</span>) <span class="cm">// "hello"</span>
-        </div>
+        <div class="fn-desc">Removes leading and trailing whitespace. Pipeline convenience re-export.</div>
+        <div class="fn-example"><span class="fn">str.TrimSpace</span>(<span class="str">"  hello  "</span>) <span class="cm">// "hello"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">SlugifyASCII <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
         <div class="fn-desc">URL-safe ASCII slug. Lowercase, hyphens, strips non-ASCII.</div>
-        <div class="fn-example">
-<span class="fn">str.SlugifyASCII</span>(<span class="str">"Hello, World!"</span>) <span class="cm">// "hello-world"</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.SlugifyASCII</span>(<span class="str">"Hello, World!"</span>) <span class="cm">// "hello-world"</span></div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">NaturalSortKey <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func(string) string</div>
         <div class="fn-desc">Returns a key for natural sorting. "file2" sorts before "file10".</div>
-        <div class="fn-example">
-<span class="fn">str.NaturalSortKey</span>(<span class="str">"file2"</span>)
-<span class="cm">// "file00000000000000000002"</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.NaturalSortKey</span>(<span class="str">"file2"</span>) <span class="cm">// sorts before "file10"</span></div>
       </div>
     </div>
   </div>
@@ -759,7 +713,7 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
       <div class="fn-card">
         <div class="fn-name">PadLeft / PadRight <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func PadLeft(pad string, width int) func(string) string</div>
-        <div class="fn-desc">Pad to target width (runes). Multi-char pads truncated to hit exact width.</div>
+        <div class="fn-desc">Pad to target width (runes). Multi-char pads truncated to exact width.</div>
         <div class="fn-example">
 <span class="fn">str.PadLeft</span>(<span class="str">"0"</span>, <span class="num">8</span>)(<span class="str">"1234"</span>)    <span class="cm">// "00001234"</span>
 <span class="fn">str.PadRight</span>(<span class="str">"."</span>, <span class="num">10</span>)(<span class="str">"hello"</span>) <span class="cm">// "hello....."</span>
@@ -770,10 +724,7 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
         <div class="fn-name">Truncate <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func Truncate(maxLen int, ellipsis string) func(string) string</div>
         <div class="fn-desc">Truncate to max runes. Length includes ellipsis. Multibyte-safe.</div>
-        <div class="fn-example">
-<span class="fn">str.Truncate</span>(<span class="num">8</span>, <span class="str">"..."</span>)(<span class="str">"hello world"</span>) <span class="cm">// "hello..."</span>
-<span class="fn">str.Truncate</span>(<span class="num">5</span>, <span class="str">"..."</span>)(<span class="str">"&#x4F60;&#x597D;&#x4E16;&#x754C;abc"</span>) <span class="cm">// "&#x4F60;&#x597D;..."</span>
-        </div>
+        <div class="fn-example"><span class="fn">str.Truncate</span>(<span class="num">8</span>, <span class="str">"..."</span>)(<span class="str">"hello world"</span>) <span class="cm">// "hello..."</span></div>
       </div>
 
       <div class="fn-card">
@@ -789,22 +740,20 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
       <div class="fn-card">
         <div class="fn-name">Wrap <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func Wrap(width int, opts ...WrapOption) func(string) string</div>
-        <div class="fn-desc">Word wrap with strategies: WrapBeforeWord (default), WrapAfterWord, WrapHardBreak. Custom line breaks and indentation.</div>
+        <div class="fn-desc">Word wrap with WrapBeforeWord (default), WrapAfterWord, or WrapHardBreak. Custom line breaks and indentation.</div>
         <div class="fn-example">
 <span class="fn">str.Wrap</span>(<span class="num">40</span>)(<span class="str">"long text..."</span>)
 <span class="fn">str.Wrap</span>(<span class="num">76</span>, <span class="fn">str.WrapHardBreak</span>)(<span class="str">"base64..."</span>)
-<span class="fn">str.Wrap</span>(<span class="num">80</span>, <span class="fn">str.WithIndent</span>(<span class="str">"  "</span>))(<span class="str">"text"</span>)
         </div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">Pluralize <span class="tag tag-pipe">pipe</span></div>
         <div class="fn-sig">func Pluralize(count int, plural string) func(string) string</div>
-        <div class="fn-desc">Selects singular (input) or plural form based on count. Count 1 = singular, everything else = plural.</div>
+        <div class="fn-desc">Selects singular (input) or plural form. Count 1 = singular, everything else = plural.</div>
         <div class="fn-example">
 <span class="fn">str.Pluralize</span>(<span class="num">1</span>, <span class="str">"items"</span>)(<span class="str">"item"</span>) <span class="cm">// "item"</span>
 <span class="fn">str.Pluralize</span>(<span class="num">5</span>, <span class="str">"items"</span>)(<span class="str">"item"</span>) <span class="cm">// "items"</span>
-<span class="fn">str.Pluralize</span>(<span class="num">0</span>, <span class="str">"items"</span>)(<span class="str">"item"</span>) <span class="cm">// "items"</span>
         </div>
       </div>
     </div>
@@ -815,18 +764,18 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
 <section id="generate">
   <div class="container">
     <h2><span class="icon">&#x1F3B2;</span>Generate</h2>
-    <p class="section-desc">Cryptographically secure random string generation.</p>
+    <p class="section-desc">Cryptographically secure random string generation with <code>crypto/rand</code>.</p>
 
     <div class="fn-grid">
       <div class="fn-card" style="grid-column: span 2;">
         <div class="fn-name">RandomToken <span class="tag tag-standalone">standalone</span></div>
         <div class="fn-sig">func RandomToken(opts ...TokenOption) string</div>
-        <div class="fn-desc">Generate random strings using <code>crypto/rand</code>. Bias-free character selection. Configurable length, charset, and prefix. Default: 20 alphanumeric characters.</div>
+        <div class="fn-desc">Generate random strings. Bias-free character selection. Configurable length, charset, and prefix. Default: 20 alphanumeric characters.</div>
         <div class="fn-example">
 <span class="fn">str.RandomToken</span>()                                          <span class="cm">// "7wyxEyzgvsrEGdHcpbiU"</span>
 <span class="fn">str.RandomToken</span>(<span class="fn">str.WithLength</span>(<span class="num">32</span>))                          <span class="cm">// 32 random alphanumeric chars</span>
 <span class="fn">str.RandomToken</span>(<span class="fn">str.WithCharset</span>(<span class="str">"0123456789"</span>))              <span class="cm">// 20 random digits</span>
-<span class="fn">str.RandomToken</span>(<span class="fn">str.WithPrefix</span>(<span class="str">"tok_"</span>), <span class="fn">str.WithLength</span>(<span class="num">16</span>)) <span class="cm">// "tok_" + 16 random chars</span>
+<span class="fn">str.RandomToken</span>(<span class="fn">str.WithPrefix</span>(<span class="str">"tok_"</span>), <span class="fn">str.WithLength</span>(<span class="num">16</span>)) <span class="cm">// "tok_" + 16 chars</span>
         </div>
       </div>
     </div>
@@ -843,18 +792,17 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
       <div class="fn-card">
         <div class="fn-name">FuzzyMatch <span class="tag tag-standalone">standalone</span></div>
         <div class="fn-sig">func FuzzyMatch(needle string, haystack []string) []Match</div>
-        <div class="fn-desc">Scores each entry using JaroWinkler. Returns matches with score &ge; 0.7, sorted by score descending. Case-insensitive.</div>
+        <div class="fn-desc">Returns entries scoring >= 0.7, sorted by score descending. Case-insensitive.</div>
         <div class="fn-example">
 matches <span class="op">:=</span> <span class="fn">str.FuzzyMatch</span>(<span class="str">"helo"</span>, []<span class="typ">string</span>{<span class="str">"hello"</span>, <span class="str">"help"</span>, <span class="str">"world"</span>})
-<span class="cm">// matches[0].Value == "hello"</span>
-<span class="cm">// matches[0].Score &#x2248; 0.93</span>
+<span class="cm">// matches[0].Value == "hello", Score ~ 0.93</span>
         </div>
       </div>
 
       <div class="fn-card">
         <div class="fn-name">FuzzyMatchAll <span class="tag tag-standalone">standalone</span></div>
         <div class="fn-sig">func FuzzyMatchAll(needle string, haystack []string) []Match</div>
-        <div class="fn-desc">Like FuzzyMatch but returns all non-zero scores. No threshold filtering.</div>
+        <div class="fn-desc">Like FuzzyMatch but returns all non-zero scores. No threshold.</div>
         <div class="fn-example">
 <span class="kw">type</span> <span class="typ">Match</span> <span class="kw">struct</span> {
     Score <span class="typ">float64</span> <span class="cm">// 0.0 to 1.0</span>
@@ -877,10 +825,9 @@ matches <span class="op">:=</span> <span class="fn">str.FuzzyMatch</span>(<span 
       <div class="fn-card">
         <div class="fn-name">Levenshtein <span class="tag tag-standalone">standalone</span></div>
         <div class="fn-sig">func Levenshtein(a, b string) int</div>
-        <div class="fn-desc">Edit distance between two strings. Uses O(min(m,n)) space with 2-row rolling array.</div>
+        <div class="fn-desc">Edit distance. O(min(m,n)) space with 2-row rolling array.</div>
         <div class="fn-example">
 <span class="fn">str.Levenshtein</span>(<span class="str">"kitten"</span>, <span class="str">"sitting"</span>) <span class="cm">// 3</span>
-<span class="fn">str.Levenshtein</span>(<span class="str">"hello"</span>, <span class="str">"hello"</span>)   <span class="cm">// 0</span>
 <span class="fn">str.Levenshtein</span>(<span class="str">""</span>, <span class="str">"hello"</span>)       <span class="cm">// 5</span>
         </div>
       </div>
@@ -888,18 +835,17 @@ matches <span class="op">:=</span> <span class="fn">str.FuzzyMatch</span>(<span 
       <div class="fn-card">
         <div class="fn-name">JaroWinkler <span class="tag tag-standalone">standalone</span></div>
         <div class="fn-sig">func JaroWinkler(a, b string) float64</div>
-        <div class="fn-desc">Similarity score between 0.0 (completely different) and 1.0 (identical). Winkler prefix bonus p=0.1, max prefix 4.</div>
+        <div class="fn-desc">Similarity 0.0 to 1.0. Winkler prefix bonus p=0.1, max prefix 4.</div>
         <div class="fn-example">
 <span class="fn">str.JaroWinkler</span>(<span class="str">"martha"</span>, <span class="str">"marhta"</span>) <span class="cm">// ~0.96</span>
 <span class="fn">str.JaroWinkler</span>(<span class="str">"hello"</span>, <span class="str">"hello"</span>)   <span class="cm">// 1.0</span>
-<span class="fn">str.JaroWinkler</span>(<span class="str">""</span>, <span class="str">"hello"</span>)       <span class="cm">// 0.0</span>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<hr class="retro-divider">
+<div class="rainbow-stripe"></div>
 
 <!-- ==================== PATTERNS ==================== -->
 <section id="patterns">
@@ -911,78 +857,39 @@ matches <span class="op">:=</span> <span class="fn">str.FuzzyMatch</span>(<span 
       <div class="pattern-card">
         <h3>Input Normalization</h3>
         <p class="pattern-desc">Clean user input before storage</p>
-        <div class="fn-example">
-<span class="kw">var</span> normalizeInput = <span class="fn">str.Pipe</span>(
-    <span class="fn">str.TrimSpace</span>,
-    <span class="fn">str.CollapseWhitespace</span>,
-)
-        </div>
+        <div class="fn-example"><span class="kw">var</span> clean = <span class="fn">str.Pipe</span>(<span class="fn">str.TrimSpace</span>, <span class="fn">str.CollapseWhitespace</span>)</div>
       </div>
-
       <div class="pattern-card">
         <h3>URL Slug Generation</h3>
         <p class="pattern-desc">Turn any string into a URL-safe slug</p>
-        <div class="fn-example">
-<span class="kw">var</span> slugify = <span class="fn">str.Pipe</span>(
-    <span class="fn">str.TrimSpace</span>,
-    <span class="fn">str.CollapseWhitespace</span>,
-    <span class="fn">str.SlugifyASCII</span>,
-)
-        </div>
+        <div class="fn-example"><span class="kw">var</span> slugify = <span class="fn">str.Pipe</span>(<span class="fn">str.TrimSpace</span>, <span class="fn">str.CollapseWhitespace</span>, <span class="fn">str.SlugifyASCII</span>)</div>
       </div>
-
       <div class="pattern-card">
         <h3>Log Field Formatting</h3>
         <p class="pattern-desc">Fixed-width, truncated log columns</p>
-        <div class="fn-example">
-<span class="kw">var</span> formatField = <span class="fn">str.Pipe</span>(
-    <span class="fn">str.TrimSpace</span>,
-    <span class="fn">str.Truncate</span>(<span class="num">50</span>, <span class="str">"..."</span>),
-    <span class="fn">str.PadRight</span>(<span class="str">" "</span>, <span class="num">50</span>),
-)
-        </div>
+        <div class="fn-example"><span class="kw">var</span> fmt = <span class="fn">str.Pipe</span>(<span class="fn">str.TrimSpace</span>, <span class="fn">str.Truncate</span>(<span class="num">50</span>, <span class="str">"..."</span>), <span class="fn">str.PadRight</span>(<span class="str">" "</span>, <span class="num">50</span>))</div>
       </div>
-
       <div class="pattern-card">
         <h3>Conditional Truncation</h3>
         <p class="pattern-desc">Only shorten strings that are too long</p>
-        <div class="fn-example">
-isLong <span class="op">:=</span> <span class="kw">func</span>(s <span class="typ">string</span>) <span class="typ">bool</span> {
-    <span class="kw">return</span> len([]rune(s)) > <span class="num">100</span>
-}
-<span class="kw">var</span> clean = <span class="fn">str.Pipe</span>(
-    <span class="fn">str.TrimSpace</span>,
-    <span class="fn">str.PipeIf</span>(isLong, <span class="fn">str.Truncate</span>(<span class="num">100</span>, <span class="str">"..."</span>)),
-)
-        </div>
+        <div class="fn-example">isLong <span class="op">:=</span> <span class="kw">func</span>(s <span class="typ">string</span>) <span class="typ">bool</span> { <span class="kw">return</span> len([]rune(s)) > <span class="num">100</span> }
+<span class="kw">var</span> c = <span class="fn">str.Pipe</span>(<span class="fn">str.TrimSpace</span>, <span class="fn">str.PipeIf</span>(isLong, <span class="fn">str.Truncate</span>(<span class="num">100</span>, <span class="str">"..."</span>)))</div>
       </div>
-
       <div class="pattern-card">
         <h3>Per-Line Processing</h3>
         <p class="pattern-desc">Transform every line independently</p>
-        <div class="fn-example">
-<span class="kw">var</span> tidyLines = <span class="fn">str.PipeMap</span>(
-    <span class="fn">str.Lines</span>, <span class="str">"\n"</span>,
-    <span class="fn">str.Pipe</span>(<span class="fn">str.TrimSpace</span>, <span class="fn">str.CollapseWhitespace</span>),
-)
-        </div>
+        <div class="fn-example"><span class="kw">var</span> tidy = <span class="fn">str.PipeMap</span>(<span class="fn">str.Lines</span>, <span class="str">"\n"</span>, <span class="fn">str.TrimSpace</span>)</div>
       </div>
-
       <div class="pattern-card">
-        <h3>Domain-Specific Cases</h3>
+        <h3>Domain Acronyms</h3>
         <p class="pattern-desc">Custom acronyms for your industry</p>
-        <div class="fn-example">
-<span class="kw">var</span> toSnake = <span class="fn">str.ToSnakeCaseWith</span>(
-    <span class="fn">str.WithAcronyms</span>(<span class="str">"DAO"</span>, <span class="str">"NFT"</span>, <span class="str">"DEFI"</span>),
-)
-toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</span>
-        </div>
+        <div class="fn-example"><span class="kw">var</span> s = <span class="fn">str.ToSnakeCaseWith</span>(<span class="fn">str.WithAcronyms</span>(<span class="str">"DAO"</span>, <span class="str">"NFT"</span>))</div>
       </div>
     </div>
   </div>
 </section>
 
-<hr class="retro-divider">
+<div class="rainbow-stripe"></div>
 
 <!-- ==================== EDGE CASES ==================== -->
 <section id="edge-cases">
@@ -998,13 +905,11 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
         <tr><td><code>PipeUnless(nil, fn)</code></td><td>nil predicate</td><td>Always applies fn</td></tr>
         <tr><td><code>PipeMap(nil, j, fn)</code></td><td>nil split</td><td>Passthrough</td></tr>
         <tr><td><code>PadLeft("", N)</code></td><td>empty pad</td><td>Returns input unchanged</td></tr>
-        <tr><td><code>PadLeft(p, N)</code></td><td>width &le; input</td><td>Returns input unchanged</td></tr>
         <tr><td><code>Truncate(0, "...")</code></td><td>zero length</td><td>Returns empty string</td></tr>
-        <tr><td><code>Truncate(N, ell)</code></td><td>ellipsis &ge; maxLen</td><td>Ellipsis truncated to maxLen</td></tr>
         <tr><td><code>Substring(-3, 2)</code></td><td>negative start</td><td>Counts from end</td></tr>
         <tr><td><code>Wrap(0)</code></td><td>zero width</td><td>Returns input unchanged</td></tr>
         <tr><td><code>Pluralize(0, pl)</code></td><td>count zero</td><td>Returns plural</td></tr>
-        <tr><td><code>RandomToken(WithLength(0))</code></td><td>zero length</td><td>Returns prefix only (or empty)</td></tr>
+        <tr><td><code>RandomToken(WithLength(0))</code></td><td>zero length</td><td>Returns prefix only</td></tr>
         <tr><td>All case functions</td><td>empty string</td><td>Returns empty string</td></tr>
         <tr><td><code>Levenshtein("", "")</code></td><td>both empty</td><td>Returns 0</td></tr>
         <tr><td><code>JaroWinkler("", "")</code></td><td>both empty</td><td>Returns 1.0</td></tr>
@@ -1014,15 +919,15 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
   </div>
 </section>
 
-<hr class="retro-divider">
+<div class="arc-stripes"></div>
 
 <!-- ==================== FOOTER ==================== -->
 <footer>
   <div class="container">
-    <p style="font-family: 'Orbitron', sans-serif; font-size: 1.5rem; color: var(--neon-pink); margin-bottom: 16px; text-shadow: 0 0 20px rgba(255, 106, 26, 0.4);">STR</p>
+    <div class="footer-logo">STR</div>
     <p>Made by <a href="https://github.com/schigh">@schigh</a></p>
-    <p style="margin-top: 8px;"><a href="https://github.com/schigh/str">GitHub</a> &bull; <a href="https://pkg.go.dev/github.com/schigh/str">Documentation</a> &bull; MIT License</p>
-    <p style="margin-top: 20px; font-size: 0.65rem; color: rgba(180, 200, 224, 0.2);">Zero dependencies. Pure functions. Pipeline-first. Since 2026.</p>
+    <p style="margin-top: 6px;"><a href="https://github.com/schigh/str">GitHub</a> &bull; <a href="https://pkg.go.dev/github.com/schigh/str">Documentation</a> &bull; MIT License</p>
+    <p style="margin-top: 16px; font-size: 0.75rem; color: #b0a898;">Zero dependencies. Pure functions. Pipeline-first. Since 2026.</p>
   </div>
 </footer>
 
