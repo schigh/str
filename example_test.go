@@ -196,6 +196,40 @@ func ExamplePipeMap_words() {
 	// Output: HELLO WORLD
 }
 
+func ExampleRandomToken() {
+	tok := str.RandomToken()
+	fmt.Println(len(tok)) // always 20
+	// Output: 20
+}
+
+func ExampleRandomToken_options() {
+	tok := str.RandomToken(str.WithPrefix("tok_"), str.WithLength(6), str.WithCharset("0123456789"))
+	fmt.Println(len(tok)) // "tok_" (4) + 6 digits
+	// Output: 10
+}
+
+func ExampleNaturalSortKey() {
+	fmt.Println(str.NaturalSortKey("file2"))
+	// Output: file00000000000000000002
+}
+
+func ExamplePluralize() {
+	fmt.Println(str.Pluralize(1, "items")("item"))
+	fmt.Println(str.Pluralize(5, "items")("item"))
+	// Output:
+	// item
+	// items
+}
+
+func ExampleFuzzyMatch() {
+	hay := []string{"hello", "help", "world"}
+	matches := str.FuzzyMatch("helo", hay)
+	if len(matches) > 0 {
+		fmt.Println(matches[0].Value)
+	}
+	// Output: hello
+}
+
 func ExampleLevenshtein() {
 	fmt.Println(str.Levenshtein("kitten", "sitting"))
 	// Output: 3

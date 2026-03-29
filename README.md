@@ -102,6 +102,12 @@ str.CollapseWhitespace("hello   \t\n  world") // "hello world"
 str.SlugifyASCII("Hello, World!") // "hello-world"
 ```
 
+**NaturalSortKey** returns a key that sorts naturally (numbers in numeric order).
+
+```go
+str.NaturalSortKey("file2")  // sorts before NaturalSortKey("file10")
+```
+
 ## Format
 
 **PadLeft** / **PadRight** pad to a target width (runes). Multi-char pads are truncated to hit exact width.
@@ -131,6 +137,34 @@ str.Wrap(40)("long text...")                           // wraps before words (de
 str.Wrap(40, str.WrapAfterWord)("long text...")        // wraps after words
 str.Wrap(76, str.WrapHardBreak)("base64encoded...")    // hard break at width
 ```
+
+**Pluralize** selects singular or plural form based on count.
+
+```go
+str.Pluralize(1, "items")("item") // "item"
+str.Pluralize(5, "items")("item") // "items"
+```
+
+## Generate
+
+**RandomToken** generates cryptographically random strings using `crypto/rand`.
+
+```go
+str.RandomToken()                                                    // 20 alphanumeric chars
+str.RandomToken(str.WithLength(32), str.WithCharset("0123456789"))   // 32 digits
+str.RandomToken(str.WithPrefix("tok_"), str.WithLength(16))          // "tok_" + 16 random chars
+```
+
+## Search
+
+**FuzzyMatch** scores haystack entries against a needle using JaroWinkler similarity. Returns matches with score >= 0.7, sorted by score descending. Case-insensitive.
+
+```go
+matches := str.FuzzyMatch("helo", []string{"hello", "help", "world"})
+// matches[0].Value == "hello", matches[0].Score ≈ 0.93
+```
+
+**FuzzyMatchAll** returns all non-zero scores (no threshold).
 
 ## Measure
 
@@ -172,7 +206,7 @@ var formatField = str.Pipe(
 
 ## Roadmap
 
-Phase 2 will add: random token generation, fuzzy matching, transliteration, grapheme-aware reverse, Unicode-aware slugify, conditional pipe composition, and customizable acronym lists.
+Future releases may add: transliteration, grapheme-aware reverse, Unicode-aware slugify, word/line diff, and template helpers.
 
 ## License
 
