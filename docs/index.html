@@ -223,7 +223,7 @@ h2 .icon { margin-right: 10px; }
 /* ---- FUNCTION CARDS ---- */
 .fn-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 
@@ -345,7 +345,7 @@ h2 .icon { margin-right: 10px; }
 /* ---- PATTERNS ---- */
 .pattern-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 
@@ -767,7 +767,7 @@ toSnake(<span class="str">"DAOVoting"</span>) <span class="cm">// "dao_voting"</
     <p class="section-desc">Cryptographically secure random string generation with <code>crypto/rand</code>.</p>
 
     <div class="fn-grid">
-      <div class="fn-card" style="grid-column: span 2;">
+      <div class="fn-card">
         <div class="fn-name">RandomToken <span class="tag tag-standalone">standalone</span></div>
         <div class="fn-sig">func RandomToken(opts ...TokenOption) string</div>
         <div class="fn-desc">Generate random strings. Bias-free character selection. Configurable length, charset, and prefix. Default: 20 alphanumeric characters.</div>
