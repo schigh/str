@@ -87,14 +87,22 @@ const (
 )
 
 func classifySlugRune(r rune) slugAction {
-	switch {
-	case r >= 'a' && r <= 'z', r >= '0' && r <= '9':
+	if isLowerOrDigit(r) {
 		return slugKeep
-	case r >= 'A' && r <= 'Z':
-		return slugLower
-	case r == ' ' || r == '-' || r == '_' || unicode.IsPunct(r) || unicode.IsSymbol(r):
-		return slugHyphen
-	default:
-		return slugSkip
 	}
+	if r >= 'A' && r <= 'Z' {
+		return slugLower
+	}
+	if isSlugSeparator(r) {
+		return slugHyphen
+	}
+	return slugSkip
+}
+
+func isLowerOrDigit(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9')
+}
+
+func isSlugSeparator(r rune) bool {
+	return r == ' ' || r == '-' || r == '_' || unicode.IsPunct(r) || unicode.IsSymbol(r)
 }

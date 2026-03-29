@@ -89,12 +89,22 @@ func jaroSimilarity(a, b []rune) float64 {
 	aMatched := make([]bool, aLen)
 	bMatched := make([]bool, bLen)
 
-	matches := 0
-	transpositions := 0
+	matches := jaroCountMatches(a, b, aMatched, bMatched, matchDist)
+	if matches == 0 {
+		return 0.0
+	}
 
-	for i := range aLen {
+	transpositions := jaroCountTranspositions(a, b, aMatched, bMatched)
+
+	m := float64(matches)
+	return (m/float64(aLen) + m/float64(bLen) + (m-math.Floor(float64(transpositions)/2.0))/m) / 3.0
+}
+
+func jaroCountMatches(a, b []rune, aMatched, bMatched []bool, matchDist int) int {
+	matches := 0
+	for i := range len(a) {
 		lo := max(0, i-matchDist)
-		hi := min(i+matchDist+1, bLen)
+		hi := min(i+matchDist+1, len(b))
 		for j := lo; j < hi; j++ {
 			if bMatched[j] || a[i] != b[j] {
 				continue
@@ -105,13 +115,13 @@ func jaroSimilarity(a, b []rune) float64 {
 			break
 		}
 	}
+	return matches
+}
 
-	if matches == 0 {
-		return 0.0
-	}
-
+func jaroCountTranspositions(a, b []rune, aMatched, bMatched []bool) int {
+	transpositions := 0
 	k := 0
-	for i := range aLen {
+	for i := range len(a) {
 		if !aMatched[i] {
 			continue
 		}
@@ -123,7 +133,5 @@ func jaroSimilarity(a, b []rune) float64 {
 		}
 		k++
 	}
-
-	m := float64(matches)
-	return (m/float64(aLen) + m/float64(bLen) + (m-math.Floor(float64(transpositions)/2.0))/m) / 3.0
+	return transpositions
 }

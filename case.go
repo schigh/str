@@ -135,30 +135,38 @@ func (s *segmentSplitter) split() {
 		}
 
 		if unicode.IsDigit(r) {
-			if len(s.current) > 0 && unicode.IsLetter(s.current[len(s.current)-1]) {
-				s.flush()
-			}
-			s.current = append(s.current, r)
-			s.pos++
+			s.handleDigit(r)
 			continue
 		}
 
-		if len(s.current) > 0 && unicode.IsDigit(s.current[len(s.current)-1]) && unicode.IsUpper(r) {
-			s.flush()
-		}
-
-		if unicode.IsLower(r) {
-			s.current = append(s.current, r)
-			s.pos++
-			continue
-		}
-
-		s.processUpperRun()
+		s.handleLetter(r)
 	}
 
 	if len(s.current) > 0 {
 		s.words = append(s.words, strings.ToLower(string(s.current)))
 	}
+}
+
+func (s *segmentSplitter) handleDigit(r rune) {
+	if len(s.current) > 0 && unicode.IsLetter(s.current[len(s.current)-1]) {
+		s.flush()
+	}
+	s.current = append(s.current, r)
+	s.pos++
+}
+
+func (s *segmentSplitter) handleLetter(r rune) {
+	if len(s.current) > 0 && unicode.IsDigit(s.current[len(s.current)-1]) && unicode.IsUpper(r) {
+		s.flush()
+	}
+
+	if unicode.IsLower(r) {
+		s.current = append(s.current, r)
+		s.pos++
+		return
+	}
+
+	s.processUpperRun()
 }
 
 func (s *segmentSplitter) processUpperRun() {
