@@ -26,6 +26,10 @@ jobs:
             exit 1
           fi
       - run: go vet ./...
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   bench:
     runs-on: ubuntu-latest

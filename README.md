@@ -1,6 +1,7 @@
 [![CI](https://github.com/schigh/str/actions/workflows/ci.yml/badge.svg)](https://github.com/schigh/str/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/schigh/str.svg)](https://pkg.go.dev/github.com/schigh/str)
 [![Go Report Card](https://goreportcard.com/badge/github.com/schigh/str)](https://goreportcard.com/report/github.com/schigh/str)
+[![codecov](https://codecov.io/github/schigh/str/graph/badge.svg?token=vzYvIwXOLk)](https://codecov.io/github/schigh/str)
 
 # str
 
