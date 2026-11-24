@@ -23,6 +23,13 @@ func TestToSnakeCase(t *testing.T) {
 		{"all lowercase", "alllower", "alllower"},
 		{"single char", "A", "a"},
 		{"unicode letters", "GroßEltern", "groß_eltern"},
+		{"uncased letters", "你好世界", "你好世界"},
+		{"titlecase letter", "ǅ", "ǆ"},
+		{"titlecase word", "ǅunglaTest", "ǆungla_test"},
+		{"titlecase after lowercase", "helloǅungla", "hello_ǆungla"},
+		{"mixed cased and uncased", "hello世界ID", "hello世界_id"},
+		{"uppercase before uncased", "ABC世界", "abc世界"},
+		{"acronym before uncased", "HTTP世界", "http_世界"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
