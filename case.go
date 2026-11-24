@@ -160,7 +160,8 @@ func (s *segmentSplitter) handleLetter(r rune) {
 		s.flush()
 	}
 
-	if unicode.IsLower(r) {
+	// Lowercase and uncased letters continue the current word.
+	if !unicode.IsUpper(r) && !unicode.IsTitle(r) {
 		s.current = append(s.current, r)
 		s.pos++
 		return
@@ -171,7 +172,7 @@ func (s *segmentSplitter) handleLetter(r rune) {
 
 func (s *segmentSplitter) processUpperRun() {
 	start := s.pos
-	for s.pos < len(s.runes) && unicode.IsUpper(s.runes[s.pos]) {
+	for s.pos < len(s.runes) && (unicode.IsUpper(s.runes[s.pos]) || unicode.IsTitle(s.runes[s.pos])) {
 		s.pos++
 	}
 	upperRun := s.runes[start:s.pos]
